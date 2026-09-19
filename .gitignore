@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project-specific
+.cache/
+htmlcov/
+coverage.xml
+report.xml
+.DS_Store
