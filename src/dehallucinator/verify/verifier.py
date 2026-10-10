@@ -1,6 +1,23 @@
 """Verifier & Scorer (Role C): labels each claim using its evidence."""
 
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+from dehallucinator import config
 from dehallucinator.models import Claim, Evidence, Verdict
+
+_tokenizer = None
+_model = None
+
+
+def _load_model():
+    """Lazily load the NLI model and tokenizer into module-level variables."""
+    global _tokenizer, _model
+
+    if _model is None or _tokenizer is None:
+        _tokenizer = AutoTokenizer.from_pretrained(config.NLI_MODEL)
+        _model = AutoModelForSequenceClassification.from_pretrained(config.NLI_MODEL)
+
+    return _tokenizer, _model
 
 
 def verify_claims(claims: list[Claim], evidence: list[Evidence]) -> list[Verdict]:
