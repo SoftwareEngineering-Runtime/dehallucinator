@@ -18,3 +18,13 @@ What I kept: validate_input, split_sentences, get_nlp with lru_cache, the tests
 What I changed: replaced a nested enumerate with a plain loop so the numbering is easier
 to read and still works once DH-162 starts dropping sentences
 I can explain it: yes
+
+## DH-162 non-factual sentence filter – 2026-10-10
+Tool: Claude
+Prompt: "Add is_factual() for FR-1.3: drop questions, sentences containing an opinion marker
+(whole words, any case), sentences starting with I/We, and sentences shorter than
+MIN_CLAIM_WORDS. Keep claim IDs gap-free but keep the original sentence_index.
+Write tests TC-1-04 to TC-1-06 plus edge cases."
+What I kept: is_factual, OPINION_PATTERN regex, the tests
+What I changed: used a \b word-boundary regex so "shoulder" is not treated as "should"
+I can explain it: yes
