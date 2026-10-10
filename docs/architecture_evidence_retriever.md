@@ -50,3 +50,20 @@ Data flow:
 ## 6. Testing
 Unit tests in `tests/unit/test_retriever.py` and `tests/unit/test_ranker.py`
 (TC-2-01 to TC-2-05). All HTTP calls are mocked.
+
+## 7. Local KB, cache and fallback (planned: FR-2.4, FR-2.6 to FR-2.8)
+- **Local KB (FR-2.4):** all `data/kb/*.txt` files are read once at start-up and
+  treated as pages with source `"local_kb"`. Their snippets are ranked together with
+  Wikipedia snippets.
+- **Cache (FR-2.6):** Wikipedia pages are stored in SQLite and reused if under
+  `CACHE_TTL_DAYS` (7) old. Queries are parameterised so SQL-like input cannot break it.
+- **Failure handling (FR-2.7, NFR-2):** on timeout or network error the retriever
+  retries `HTTP_RETRIES` (2) times with a `HTTP_TIMEOUT_S` (5 s) timeout, logs a warning
+  and continues with the local KB only.
+- **No evidence (FR-2.8):** no `Evidence` is returned for a claim with no usable snippet.
+
+## 8. Output object
+`Evidence = {claim_id, source, source_url, title, snippet, relevance}`, where `source`
+is `"wikipedia"` or `"local_kb"` and `relevance` is the TF-IDF cosine score (0 to 1).
+`rank_snippets` returns `text`, `title`, `url` and `relevance`; `retrieve_evidence` maps
+these to the `Evidence` fields.
