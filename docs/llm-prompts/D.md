@@ -31,3 +31,13 @@ What I changed: reused the extractor's get_nlp and skipped whitespace-only sente
 sentence numbering matches the Claim Extractor; trimmed sentence spans so tags stay before a
 paragraph break
 I can explain it: TODO
+
+## DH-176 check_answer() pipeline – 2026-10-10
+Tool: Claude
+Prompt: "Implement check_answer(text) for FR-4.2: run extract, retrieve, verify, score and
+correct in order, return a CheckedAnswer, log each stage's time in milliseconds, and raise
+ValueError for invalid input. Unit-test it with the four stages faked."
+What I kept: the _timed helper, the single log line per answer, the tests with fake stages
+What I changed: skip the retriever and verifier when there are no claims, so a greeting does
+not trigger network calls or load the NLI model
+I can explain it: TODO
