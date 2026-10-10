@@ -13,6 +13,10 @@ EVIDENCE_PER_CLAIM = 3
 HTTP_TIMEOUT_S = 5
 HTTP_RETRIES = 2
 CACHE_TTL_DAYS = 7
+MAX_QUERY_WORDS = 8
+WIKI_MAX_CHARS = 6000
+WIKI_API_URL = "https://en.wikipedia.org/w/api.php"
+USER_AGENT = "Dehallucinator/0.1 (SE mini-project; shreyavr406@gmail.com)"
 
 # Verifier (C)
 NLI_MODEL = "cross-encoder/nli-deberta-v3-xsmall"
