@@ -27,4 +27,15 @@ def verify_claims(claims: list[Claim], evidence: list[Evidence]) -> list[Verdict
 
 def trust_score(verdicts: list[Verdict]) -> float:
     """Return the overall trust score (0-100) for an answer."""
-    raise NotImplementedError("Implemented by Role C in Sprint 1")
+    if not verdicts:
+        return 100.0
+
+    score_map = {
+        "SUPPORTED": 1.0,
+        "NOT_ENOUGH_INFO": 0.5,
+        "CONTRADICTED": 0.0,
+    }
+
+    total = sum(score_map[v.label] for v in verdicts)
+    avg = total / len(verdicts)
+    return round(avg * 100, 1)
