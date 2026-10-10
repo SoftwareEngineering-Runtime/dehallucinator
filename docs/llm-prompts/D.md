@@ -53,3 +53,13 @@ try/except in the endpoint, the tests
 What I changed: made the endpoint a plain def so the slow pipeline runs in a worker thread,
 and checked it by hand with uvicorn (/health ok, blank text 422, greeting returns trust 100)
 I can explain it: TODO
+
+## DH-187 architecture doc: API, UI and deployment – 2026-10-10
+Tool: Claude
+Prompt: "Write Section 4 of the architecture document for the API, UI and deployment, in the
+same layout as the Evidence Retriever architecture doc, with a component diagram, the
+/check request flow and a deployment diagram (GitHub, Jenkins, Docker, SonarQube)."
+What I kept: the three Mermaid diagrams, the component and error-handling tables
+What I changed: marked the decorator, UI, Docker and full Jenkins pipeline as planned for
+Sprint 2 so the doc matches what is built today
+I can explain it: TODO
