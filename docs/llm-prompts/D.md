@@ -41,3 +41,15 @@ What I kept: the _timed helper, the single log line per answer, the tests with f
 What I changed: skip the retriever and verifier when there are no claims, so a greeting does
 not trigger network calls or load the NLI model
 I can explain it: TODO
+
+## DH-177 REST API – 2026-10-10
+Tool: Claude
+Prompt: "Build the FastAPI app for FR-4.4: POST /check calling check_answer and GET /health,
+422 for invalid input including blank text and malformed JSON, and 500 with a generic message
+and no stack trace for unexpected errors. Write tests TC-4-06 to TC-4-09 with check_answer
+faked."
+What I kept: the CheckRequest model with the 5000-character limit and blank-text check, the
+try/except in the endpoint, the tests
+What I changed: made the endpoint a plain def so the slow pipeline runs in a worker thread,
+and checked it by hand with uvicorn (/health ok, blank text 422, greeting returns trust 100)
+I can explain it: TODO
