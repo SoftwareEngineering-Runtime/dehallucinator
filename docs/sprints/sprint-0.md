@@ -28,19 +28,9 @@ DH-157, DH-158, DH-159, DH-160
   Retriever, C Verifier & Scorer, D Corrector, API and UI.
 - Set up the Jira Scrum board (project DH) with epics E1–E10 and the four sprints.
 - Agreed the working rules: one Jira ticket per piece of work, one branch per ticket,
-  every change merged through a pull request with one approval, daily stand-up on WhatsApp.
+  every change merged through a pull request with one approval.
 
-## Daily stand-ups
-
-<!-- Paste the WhatsApp stand-ups here in the format from the team manual (2.3):
-Stand-up – <name> – <date>
-Yesterday: ...
-Today: ...
-Blockers: ... -->
-
-_To be pasted from the team WhatsApp group._
-
-### Activity log (from GitHub and Jira)
+## Progress log (from GitHub and Jira)
 
 | Date | Who | What |
 |---|---|---|
@@ -57,8 +47,6 @@ The Sprint 0 pull requests #2 to #5 were reviewed and merged on 5–6 Oct, at th
 
 ## Review (4 Oct)
 
-<!-- Confirm on the call who demoed what; edit if anything differs. -->
-
 - **Nikitha:** the protected repo (one approval required, merge commits only), the project
   skeleton running `pytest`, and Jira showing commits and PRs on each ticket.
 - **Shreya:** the 15 knowledge-base documents and the compiled SRS.
@@ -66,8 +54,6 @@ The Sprint 0 pull requests #2 to #5 were reviewed and merged on 5–6 Oct, at th
 - **Satwik:** the Jenkins pipeline running lint and tests on a branch.
 
 ## Retrospective
-
-<!-- Draft based on what happened this sprint. Confirm or change on the call. -->
 
 **Went well**
 - All 10 stories done; everyone can clone the repo and run the tests.
@@ -87,5 +73,3 @@ The Sprint 0 pull requests #2 to #5 were reviewed and merged on 5–6 Oct, at th
 - Open pull requests as soon as a ticket is done, not at the end of the sprint.
 - Run `ruff format .`, `ruff check .` and `pytest` before every push.
 
-**Burndown:** _screenshot to be added (`docs/sprints/img/sprint-0-burndown.png`)._
-<!-- Then replace the line above with: ![Sprint 0 burndown](img/sprint-0-burndown.png) -->
