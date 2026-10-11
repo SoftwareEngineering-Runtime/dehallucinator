@@ -54,9 +54,7 @@ def test_tc_2_03_search_uses_limit_and_user_agent(monkeypatch):
 
 
 def test_tc_2_04_fetch_truncates_and_builds_url(monkeypatch):
-    payload = {
-        "query": {"pages": {"1": {"title": "Eiffel Tower", "extract": "x" * 10000}}}
-    }
+    payload = {"query": {"pages": {"1": {"title": "Eiffel Tower", "extract": "x" * 10000}}}}
     monkeypatch.setattr(retriever.requests, "get", lambda *a, **k: FakeResp(payload))
     page = retriever.fetch_page_text("Eiffel Tower")
     assert len(page["text"]) == WIKI_MAX_CHARS == 6000
