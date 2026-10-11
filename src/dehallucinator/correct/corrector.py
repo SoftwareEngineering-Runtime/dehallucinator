@@ -70,7 +70,7 @@ def _edit_for(
     span = _locate(text, claim.text, sentence)
     sentence_start, sentence_end = sentence
 
-    if label == "CONTRADICTED":
+    if label == "CONTRADICTED" and evidence is not None:
         correction = _correction(evidence)
         fallback = f" [correction: {correction}]"
         if span:
