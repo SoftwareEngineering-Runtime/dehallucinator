@@ -59,17 +59,7 @@ passing on every merged pull request.
 - Agreed that every pull request must pass Jenkins lint and tests and the SonarQube
   quality gate, and get one approval, before it is merged.
 
-## Daily stand-ups
-
-<!-- Paste the WhatsApp stand-ups here in the format from the team manual (2.3):
-Stand-up – <name> – <date>
-Yesterday: ...
-Today: ...
-Blockers: ... -->
-
-_To be pasted from the team WhatsApp group._
-
-### Activity log (from GitHub and Jira)
+## Progress log (from GitHub and Jira)
 
 | Date | Who | What |
 |---|---|---|
