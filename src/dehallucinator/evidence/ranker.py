@@ -33,22 +33,18 @@ def rank_snippets(
     candidates = []
     for page in pages:
         for snippet in make_snippets(page.get("text", "")):
-            candidates.append(
-                {"text": snippet, "title": page["title"], "url": page["url"]}
-            )
+            candidates.append({"text": snippet, "title": page["title"], "url": page["url"]})
     if not (claim_text or "").strip() or not candidates:
         return []
 
     try:
         vectorizer = TfidfVectorizer(stop_words="english")
-        matrix = vectorizer.fit_transform(
-            [claim_text] + [c["text"] for c in candidates]
-        )
+        matrix = vectorizer.fit_transform([claim_text] + [c["text"] for c in candidates])
     except ValueError:  # nothing left after removing stop words
         return []
 
     scores = cosine_similarity(matrix[0:1], matrix[1:])[0]
-    for candidate, score in zip(candidates, scores):
+    for candidate, score in zip(candidates, scores, strict=True):
         candidate["relevance"] = round(float(min(max(score, 0.0), 1.0)), 4)
 
     ranked = sorted(candidates, key=lambda c: c["relevance"], reverse=True)

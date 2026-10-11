@@ -4,8 +4,7 @@ from dehallucinator.evidence.ranker import make_snippets, rank_snippets
 EIFFEL = {
     "title": "Eiffel Tower",
     "url": "https://en.wikipedia.org/wiki/Eiffel_Tower",
-    "text": "The Eiffel Tower is in Paris. It was completed in 1889. "
-    "It is made of iron.",
+    "text": "The Eiffel Tower is in Paris. It was completed in 1889. It is made of iron.",
 }
 BANANA = {
     "title": "Banana",
