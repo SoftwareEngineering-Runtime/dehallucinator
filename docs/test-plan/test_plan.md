@@ -40,7 +40,12 @@ end-to-end API, and security testing.
 | FR-1.6 | TC-1-09 |
 | FR-1.7 | TC-1-10 |
 | FR-2.x (Role B) | See [UC-2 test cases](../test_cases_UC-2.md) traceability table |
-| FR-3.x (Role C) | _to be added_ |
+| FR-3.1 | TC-3-07 |
+| FR-3.2 | TC-3-06 |
+| FR-3.3 | TC-3-02, TC-3-03, TC-3-05 |
+| FR-3.4 | TC-3-04 |
+| FR-3.5 | No automated test identified |
+| FR-3.6 | TC-3-08, TC-3-09 |
 | FR-4.x (Role D) | _to be added_ |
 
 ## 6. Test Cases
@@ -74,10 +79,17 @@ See [`docs/test_cases_UC-2.md`](../test_cases_UC-2.md) (TC-2-01 to TC-2-10).
 
 ### UC-3: Verify a claim against its evidence (Owner: Ralph D'souza, Role C)
 
-_To be added (DH-195)._
 
 | TC ID | FR | Type | Description | Input | Expected result | Automated test | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|---|---|
+| TC-3-02 | FR-3.3 | Positive | High entailment supports the claim | Claim: “Paris is in France.” Evidence: “Paris is the capital of France.” | SUPPORTED; score 0.9; matching evidence returned | `test_tc_3_02_high_entailment_is_supported` | | |
+| TC-3-03 | FR-3.3 | Positive | High contradiction contradicts the claim | Claim: “Paris is in Italy.” Evidence: “Paris is the capital of France.” | CONTRADICTED; score 0.9; matching evidence returned | `test_tc_3_03_high_contradiction_is_contradicted` | | |
+| TC-3-04 | FR-3.4 | Negative | Claim has no evidence | Claim: “Unknown fact.” No evidence supplied | NOT_ENOUGH_INFO; score 0.0; no best evidence; model not called | `test_tc_3_04_no_evidence_is_not_enough_info` | | |
+| TC-3-05 | FR-3.3 | Boundary | Evidence is uncertain | Claim: “The fact is true.” Evidence: “Some unrelated information.” | NOT_ENOUGH_INFO; score 0.7; best evidence returned | `test_tc_3_05_uncertain_evidence_is_not_enough_info` | | |
+| TC-3-06 | FR-3.2 | Positive | Only evidence matching the claim is used | One evidence item for claim 2 and one for claim 1 | SUPPORTED; matching evidence selected; predictor called once with matching pair | `test_tc_3_06_only_matching_claim_evidence_is_used` | | |
+| TC-3-07 | FR-3.1 | Positive | Model and tokenizer are loaded on demand | Model and tokenizer initially unset | Both loaded using configured NLI model | `test_tc_3_07_model_is_loaded_lazily` | | |
+| TC-3-08 | FR-3.6 | Boundary | Empty verdict list returns the default trust score | Empty list `[]` | Trust score is 100.0 | `test_trust_score_empty_list` | | |
+| TC-3-09 | FR-3.6 | Normal | Trust score averages mixed verdicts | One SUPPORTED, one NOT_ENOUGH_INFO, one CONTRADICTED verdict | Trust score is 50.0 | `test_trust_score_mixed_verdicts` | | |
 
 ### UC-4: Check and correct a chatbot answer (Owner: Satwik, Role D)
 
