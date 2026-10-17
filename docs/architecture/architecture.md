@@ -5,7 +5,7 @@
 Sections:
 1. High-Level Architecture Overview (Role A) – this file
 2. Evidence Retriever component (Role B) – `architecture_evidence_retriever.md`
-3. Verifier component (Role C) – to be added
+3. Verifier component (Role C) – [architecture_verifier.md](architecture_verifier.md)
 4. API, UI and deployment (Role D) – [`architecture_api_ui_deployment.md`](architecture_api_ui_deployment.md)
 
 ---
