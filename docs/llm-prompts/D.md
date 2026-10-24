@@ -63,3 +63,13 @@ What I kept: the three Mermaid diagrams, the component and error-handling tables
 What I changed: marked the decorator, UI, Docker and full Jenkins pipeline as planned for
 Sprint 2 so the doc matches what is built today
 I can explain it: TODO
+
+## DH-178 @dehallucinate decorator – 2026-10-24
+Tool: Claude
+Prompt: "Implement the @dehallucinate decorator for FR-4.3: wrap any function returning a str
+so it returns a CheckedAnswer from check_answer, keep the name and docstring, and raise
+TypeError for a non-str return. Write test TC-4-10 plus edge cases."
+What I kept: functools.wraps, the isinstance check before calling the pipeline, the tests
+(including decorating a method)
+What I changed: typed it with ParamSpec so editors still show the wrapped function's arguments
+I can explain it: TODO
