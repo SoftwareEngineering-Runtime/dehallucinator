@@ -45,7 +45,12 @@ This document outlines the testing strategy for the Dehallucination Add-On Modul
 | FR-3.4 | TC-3-04 |
 | FR-3.5 | TC-3-10, TC-3-11 |
 | FR-3.6 | TC-3-08, TC-3-09 |
-| FR-4.x (Role D) | *To be added* |
+| FR-4.1 | TC-4-01, TC-4-02, TC-4-03, TC-4-04, TC-4-05 |
+| FR-4.2 | Unit tests in `tests/unit/test_pipeline.py`; integration tests in `tests/integration/test_pipeline.py` (DH-197) |
+| FR-4.3 | TC-4-10 |
+| FR-4.4 | TC-4-06, TC-4-07, TC-4-08, TC-4-09 |
+| FR-4.5 | UI tests in `tests/unit/test_ui.py`; system tests on the 10 samples (DH-198) |
+| FR-4.6 | UI tests in `tests/unit/test_ui.py` (colours, escaping); system tests (DH-198) |
 
 ## 6. Test Cases
 
@@ -93,7 +98,19 @@ Automated tests: `tests/unit/test_verifier.py`
 
 ### UC-4: Check and correct a chatbot answer (Owner: Satwik, Role D)
 
-*To be added (DH-196).*
+Automated tests: `tests/unit/test_corrector.py`, `tests/unit/test_api.py`, `tests/unit/test_guard.py`
 
 | TC ID | FR | Type | Description | Input | Expected result | Automated test | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|---|---|
+| TC-4-01 | FR-4.1 | Normal | Contradicted claim is replaced with the correction and source | “The Eiffel Tower was completed in 1899.” CONTRADICTED, evidence “…completed in 1889.” | “The Eiffel Tower was completed in 1889. [corrected, source: <url>]”; “1899” no longer appears | `test_tc_4_01_contradicted_claim_is_replaced_with_correction_and_source` | | |
+| TC-4-02 | FR-4.1 | Normal | Unverifiable claim is flagged | “The Eiffel Tower has 1,710 steps.” NOT_ENOUGH_INFO | Claim kept, followed by `[unverified]` | `test_tc_4_02_not_enough_info_claim_is_tagged_unverified` | | |
+| TC-4-03 | FR-4.1 | Normal | Supported claim is tagged with its source | “The Eiffel Tower is located in Paris.” SUPPORTED with evidence | Claim kept, followed by `[source: <url>]` | `test_tc_4_03_supported_claim_is_tagged_with_its_source` | | |
+| TC-4-04 | FR-4.1 | Normal | Text that is not a claim is left unchanged | “Hello! … I hope this helps. …” with one CONTRADICTED and one SUPPORTED claim | Greeting and closing sentence unchanged; only the two claims are rewritten or tagged | `test_tc_4_04_mixed_answer_keeps_non_claim_text_unchanged` | | |
+| TC-4-05 | FR-4.1 | Edge | Contradicted claim without evidence, and claim without a verdict | “Mars has two moons.” CONTRADICTED with no evidence; “Mars is the largest planet.” with no verdict | Both claims kept and tagged `[unverified]` | `test_tc_4_05_contradicted_without_evidence_and_missing_verdict_are_unverified` | | |
+| TC-4-06 | FR-4.4 | Normal | POST /check returns the checked answer | `POST /check` `{"text": "The Eiffel Tower is located in Paris."}` | 200; body is the `CheckedAnswer` JSON | `test_tc_4_06_check_returns_checked_answer` | | |
+| TC-4-07 | FR-4.4 | Normal | Health check | `GET /health` | 200; `{"status": "ok"}` | `test_tc_4_07_health_returns_ok` | | |
+| TC-4-08 | FR-4.4 | Error | Invalid input is rejected | Missing, empty, blank, wrong-type (42), 5001-character and wrong-field bodies; malformed JSON | 422 for each; the pipeline is not called; exactly 5000 characters is accepted | `test_tc_4_08_invalid_input_returns_422`, `test_tc_4_08_malformed_json_returns_422`, `test_exactly_5000_characters_is_accepted` | | |
+| TC-4-09 | FR-4.4 | Error | Unexpected error does not leak details | Pipeline raises `RuntimeError("secret internal detail")` | 500; `{"detail": "Internal server error"}`; no message or traceback in the response; error logged on the server | `test_tc_4_09_unexpected_error_returns_500_without_stack_trace` | | |
+| TC-4-10 | FR-4.3 | Normal | Decorator turns a chatbot function into a checked one | `@dehallucinate` on a function returning “The Eiffel Tower is located in Paris.”; also functions returning None, 42, a list, bytes | Returns a `CheckedAnswer` for the string; name and docstring kept; non-str return raises `TypeError` | `test_tc_4_10_decorated_function_returns_checked_answer`, `test_name_and_docstring_are_kept`, `test_non_string_return_raises_type_error` | | |
+
+Error and edge cases: TC-4-05, TC-4-08, TC-4-09.

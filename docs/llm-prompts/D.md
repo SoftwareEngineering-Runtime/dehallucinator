@@ -88,3 +88,13 @@ clean answer; ran all 10 through the real pipeline once Roles A to C were merged
 planted mistakes caught, no true sentence flagged) after rewording four samples that the
 retriever matched to the wrong page
 I can explain it: TODO
+
+## DH-196 UC-4 test cases – 2026-10-24
+Tool: Claude
+Prompt: "Write test cases TC-4-01 to TC-4-10 for UC-4 in the test plan, in the same table
+format as UC-1 and UC-3, with at least 2 error cases, and add the FR-4.x traceability rows."
+What I kept: the ten rows, each pointing at the pytest function that checks it, and the
+traceability rows
+What I changed: linked FR-4.2, FR-4.5 and FR-4.6 to the unit, integration and system tests
+that cover them, since they have no TC-4 number of their own
+I can explain it: TODO
