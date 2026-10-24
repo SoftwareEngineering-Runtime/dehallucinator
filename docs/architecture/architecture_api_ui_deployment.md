@@ -33,8 +33,8 @@ flowchart LR
 | Corrector | `correct/corrector.py` `correct` | Rewrites the answer from the verdicts: CONTRADICTED claims replaced by the evidence and its source, NOT_ENOUGH_INFO tagged `[unverified]`, SUPPORTED tagged with the source | FR-4.1 | Sprint 1 |
 | Pipeline | `pipeline.py` `check_answer` | Runs extract → retrieve → verify → score → correct, logs each stage's time, returns a `CheckedAnswer` | FR-4.2 | Sprint 1 |
 | REST API | `api.py` `app` | `POST /check` and `GET /health`; validates input; maps errors to HTTP status codes | FR-4.4, NFR-3 | Sprint 1 |
-| Decorator | `guard.py` `dehallucinate` | Wraps any function that returns a `str` so it returns a `CheckedAnswer` | FR-4.3 | Sprint 2 |
-| Demo UI | `ui/app.py` | Sample drop-down and paste box; colour-coded claims, sources, trust score and corrected answer | FR-4.5, FR-4.6 | Sprint 2 |
+| Decorator | `guard.py` `dehallucinate` | Wraps any function that returns a `str` so it returns a `CheckedAnswer` | FR-4.3 | Sprint 2 (DH-178) |
+| Demo UI | `ui/app.py` | Sample drop-down and paste box; colour-coded claims, sources, trust score and corrected answer | FR-4.5, FR-4.6 | Sprint 2 (DH-179) |
 
 The API, the UI and the decorator all call the same `check_answer()`, so every entry point
 gives the same result and the pipeline is tested once.
@@ -129,13 +129,16 @@ flowchart LR
 - **Source control:** GitHub. `main` is protected; every change is a pull request with one
   approval. Commits start with the Jira key so they appear on the ticket.
 - **CI (Jenkins):** a Multibranch Pipeline job scans the repository every 2 minutes and builds
-  every branch that has a `Jenkinsfile`. Current stages (DH-153): Checkout, Setup, Lint
-  (ruff), Unit tests (pytest, JUnit report). Planned for Sprint 2 (DH-180, DH-182, manual
-  11.4): the full 8-stage pipeline with a security scan (bandit, pip-audit), coverage gate at
-  80%, coverage report, and, on `main` only, a Docker image build, deploy and `/health` check.
-- **Container (DH-181, planned):** a Docker image with Python 3.11, the dependencies, the
-  spaCy model and the API, started with one command (NFR-5). Docker runs the container's
-  health check against `GET /health`.
+  every branch that has a `Jenkinsfile`. The 8 stages (DH-153, DH-180, DH-182, manual 11.4):
+  Checkout, Setup, Lint (ruff), Security scan (bandit High issues, pip-audit), Unit tests
+  (JUnit report, HTML coverage report, build fails below 80% coverage), Integration tests,
+  and on `main` only Build image and Deploy (replace the container, then wait for
+  `/health` with `ci/wait_for_health.py`). If Docker is missing on the agent, the two image
+  stages mark the build UNSTABLE instead of failing it.
+- **Container (DH-181):** a `python:3.11-slim` image with the dependencies (CPU-only
+  PyTorch), the spaCy and NLI models and the API, running as a non-root user and started with
+  one command, `docker run -p 8000:8000 dehallucinator` (NFR-5). Docker's `HEALTHCHECK` calls
+  `GET /health`. The same image can start the Streamlit UI on port 8501.
 - **Code quality:** SonarQube Cloud analyses every push (DH-154, DH-183).
 - **External service:** the running container needs HTTPS access to Wikipedia; without it the
   Retriever falls back to the local KB baked into the image (FR-2.7).
@@ -144,7 +147,7 @@ flowchart LR
 
 | Level | Tests | Notes |
 |---|---|---|
-| Unit | `tests/unit/test_corrector.py` (TC-4-01 to TC-4-05), `test_pipeline.py`, `test_api.py` (TC-4-06 to TC-4-09) | Stages and `check_answer` are faked, so no network or model is used |
+| Unit | `tests/unit/test_corrector.py` (TC-4-01 to TC-4-05), `test_pipeline.py`, `test_api.py` (TC-4-06 to TC-4-09), `test_guard.py` (TC-4-10), `test_ui.py` | Stages and `check_answer` are faked, so no network or model is used |
 | Integration | `tests/integration/test_pipeline.py` (Role C, DH-197) | Full `check_answer` with mocks |
 | System | `tests/system/test_end_to_end.py` (DH-198) | API with the 10 sample answers |
 | Security | `tests/security/test_security.py` (DH-199) | Input limits, malformed JSON, script input |

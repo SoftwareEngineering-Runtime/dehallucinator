@@ -131,3 +131,15 @@ What I changed: when Docker is missing on the agent the image stages mark the bu
 instead of failing main for everyone; ran the pipeline on my Jenkins (all stages green,
 93.5% coverage)
 I can explain it: TODO
+
+## DH-191 design doc: Corrector, pipeline and API spec – 2026-10-24
+Tool: Claude
+Prompt: "Write the software design doc for the Corrector, pipeline and API: UML class and
+sequence diagrams, the Corrector's decision flow, and an OpenAPI-style spec for /check and
+/health."
+What I kept: the Mermaid class, sequence and flow diagrams, the schema and status-code tables
+What I changed: generated docs/design/openapi.json from the FastAPI app instead of writing it
+by hand, declared the 500 response on /check so it appears in the spec, and added a test that
+fails if the committed spec and the code differ; updated the architecture doc now that the
+decorator, UI, Docker and full pipeline exist
+I can explain it: TODO

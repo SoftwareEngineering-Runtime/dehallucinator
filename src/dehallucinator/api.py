@@ -40,7 +40,16 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/check", response_model=CheckedAnswer)
+@app.post(
+    "/check",
+    response_model=CheckedAnswer,
+    responses={
+        500: {
+            "description": "Unexpected error. Generic message, no stack trace (NFR-3).",
+            "content": {"application/json": {"example": {"detail": "Internal server error"}}},
+        }
+    },
+)
 def check(request: CheckRequest) -> CheckedAnswer:
     """Check one AI answer. A plain ``def`` so FastAPI runs it in a worker thread."""
     try:
