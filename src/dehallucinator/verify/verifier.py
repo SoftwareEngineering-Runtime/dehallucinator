@@ -122,8 +122,8 @@ def verify_claims(claims: list[Claim], evidence: list[Evidence]) -> list[Verdict
             snippet_entities = {ent.text.lower() for ent in nlp(best_evidence.snippet).ents}
 
             if claim_entities.intersection(snippet_entities):
-                claim_numbers = set(re.findall(r"\d[\d,.]*", claim.text))
-                snippet_numbers = set(re.findall(r"\d[\d,.]*", best_evidence.snippet))
+                claim_numbers = set(re.findall(r"\d+(?:[.,]\d+)*", claim.text))
+                snippet_numbers = set(re.findall(r"\d+(?:[.,]\d+)*", best_evidence.snippet))
 
                 if (
                     claim_numbers
