@@ -27,6 +27,10 @@ OPINION_MARKERS = (
 )
 OPINION_PATTERN = re.compile(r"\b(" + "|".join(OPINION_MARKERS) + r")\b", re.IGNORECASE)
 
+# Places where a compound sentence may be split into two claims (FR-1.4).
+COMPOUND_SPLIT_PATTERN = re.compile(r"\s*;\s*|,\s+(?:and|but)\s+", re.IGNORECASE)
+SUBJECT_DEPS = ("nsubj", "nsubjpass", "expl")
+
 
 @lru_cache(maxsize=1)
 def get_nlp() -> Language:
@@ -66,15 +70,53 @@ def is_factual(sentence: str) -> bool:
     return len(sentence.split()) >= MIN_CLAIM_WORDS
 
 
+def has_subject_and_verb(text: str) -> bool:
+    """Return True if ``text`` has its own subject and a verb (FR-1.4)."""
+    doc = get_nlp()(text)
+    has_subject = any(token.dep_ in SUBJECT_DEPS for token in doc)
+    has_verb = any(token.pos_ in ("VERB", "AUX") for token in doc)
+    return has_subject and has_verb
+
+
+def split_compound(sentence: str) -> list[str]:
+    """Split a compound sentence at ";", ", and" or ", but" (FR-1.4).
+
+    A split is made only when both parts have their own subject and verb, so
+    "He was tired, but happy." stays one claim. Each part ends with the
+    sentence's final punctuation and starts with a capital letter.
+    """
+    match = COMPOUND_SPLIT_PATTERN.search(sentence)
+    if match is None:
+        return [sentence]
+
+    end_mark = sentence[-1] if sentence[-1] in ".!" else ""
+    left = sentence[: match.start()].strip()
+    right = sentence[match.end() :].strip()
+    if not left or not right:
+        return [sentence]
+    if not (has_subject_and_verb(left) and has_subject_and_verb(right)):
+        # Try the next split point in the right-hand part only.
+        rest = split_compound(right)
+        if len(rest) == 1:
+            return [sentence]
+        return [left + sentence[match.start() : match.end()] + rest[0], *rest[1:]]
+
+    left = left.rstrip(".!") + end_mark
+    right = right[0].upper() + right[1:]
+    return [left, *split_compound(right)]
+
+
 def extract_claims(text: str) -> list[Claim]:
     """Return the factual claims found in ``text``.
 
-    Non-factual sentences are dropped (DH-162). Compound splitting, pronoun
-    replacement and de-duplication come in later stories.
+    Non-factual sentences are dropped (DH-162) and compound sentences are
+    split into one claim per part (DH-163).
     """
     sentences = split_sentences(validate_input(text))
     claims: list[Claim] = []
     for index, sentence in enumerate(sentences):
-        if is_factual(sentence):
-            claims.append(Claim(id=len(claims) + 1, text=sentence, sentence_index=index))
+        if not is_factual(sentence):
+            continue
+        for part in split_compound(sentence):
+            claims.append(Claim(id=len(claims) + 1, text=part, sentence_index=index))
     return claims

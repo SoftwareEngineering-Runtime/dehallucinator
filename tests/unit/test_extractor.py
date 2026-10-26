@@ -5,6 +5,7 @@ import pytest
 from dehallucinator.claims.extractor import (
     extract_claims,
     is_factual,
+    split_compound,
     split_sentences,
     validate_input,
 )
@@ -100,3 +101,40 @@ def test_ids_have_no_gaps_and_keep_original_sentence_index():
 
 def test_all_sentences_non_factual_returns_empty_list():
     assert extract_claims("I think this is great. Why not?") == []
+
+
+def test_tc_1_07_compound_sentence_is_split():
+    claims = extract_claims("Einstein was born in 1879, and Einstein won the Nobel Prize in 1921.")
+    assert [c.text for c in claims] == [
+        "Einstein was born in 1879.",
+        "Einstein won the Nobel Prize in 1921.",
+    ]
+    assert [c.sentence_index for c in claims] == [0, 0]
+
+
+def test_list_with_and_is_not_split():
+    assert split_compound("Salt and pepper are spices.") == ["Salt and pepper are spices."]
+    assert split_compound("Oxygen, carbon, and nitrogen are elements.") == [
+        "Oxygen, carbon, and nitrogen are elements."
+    ]
+
+
+def test_part_without_its_own_subject_is_not_split():
+    assert split_compound("The tower was old, but strong.") == ["The tower was old, but strong."]
+
+
+@pytest.mark.parametrize(
+    ("sentence", "parts"),
+    [
+        (
+            "Paris is in France; Berlin is in Germany.",
+            ["Paris is in France.", "Berlin is in Germany."],
+        ),
+        (
+            "Rome is very old, but Paris is older, and Berlin is new.",
+            ["Rome is very old.", "Paris is older.", "Berlin is new."],
+        ),
+    ],
+)
+def test_semicolon_and_multiple_split_points(sentence, parts):
+    assert split_compound(sentence) == parts
