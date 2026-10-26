@@ -1,10 +1,25 @@
 """Verifier & Scorer (Role C): labels each claim using its evidence."""
 
+import re
+
+import spacy
+
 from dehallucinator import config
 from dehallucinator.models import Claim, Evidence, Verdict
 
 _tokenizer = None
 _model = None
+_nlp = None
+
+
+def _get_nlp():
+    """Lazily load the spaCy model for named-entity extraction."""
+    global _nlp
+
+    if _nlp is None:
+        _nlp = spacy.load("en_core_web_sm")
+
+    return _nlp
 
 
 def _load_model():
@@ -98,6 +113,25 @@ def verify_claims(claims: list[Claim], evidence: list[Evidence]) -> list[Verdict
             label = "NOT_ENOUGH_INFO"
             score = 1.0 - max(max_entailment, max_contradiction)
             best_evidence = claim_evidence[best_entailment_index]
+
+        # FR-3.5: Detect number mismatches when the claim and best
+        # evidence snippet refer to the same named entity.
+        if best_evidence is not None:
+            nlp = _get_nlp()
+            claim_entities = {ent.text.lower() for ent in nlp(claim.text).ents}
+            snippet_entities = {ent.text.lower() for ent in nlp(best_evidence.snippet).ents}
+
+            if claim_entities.intersection(snippet_entities):
+                claim_numbers = set(re.findall(r"\d[\d,.]*", claim.text))
+                snippet_numbers = set(re.findall(r"\d[\d,.]*", best_evidence.snippet))
+
+                if (
+                    claim_numbers
+                    and snippet_numbers
+                    and not claim_numbers.issubset(snippet_numbers)
+                ):
+                    label = "CONTRADICTED"
+                    score = max(max_contradiction, 0.75)
 
         verdicts.append(
             Verdict(
