@@ -1,5 +1,7 @@
 """Evidence Retriever (Role B): finds evidence for each claim."""
 
+import logging
+import time
 from functools import lru_cache
 from urllib.parse import quote
 
@@ -7,6 +9,7 @@ import requests
 import spacy
 
 from dehallucinator.config import (
+    HTTP_RETRIES,
     HTTP_TIMEOUT_S,
     MAX_QUERY_WORDS,
     USER_AGENT,
@@ -14,11 +17,14 @@ from dehallucinator.config import (
     WIKI_MAX_CHARS,
     WIKI_TOP_PAGES,
 )
+from dehallucinator.evidence.cache import get_cached_page, put_cached_page
 from dehallucinator.evidence.kb import load_kb_pages
 from dehallucinator.evidence.ranker import rank_snippets
 from dehallucinator.models import Claim, Evidence
 
 _HEADERS = {"User-Agent": USER_AGENT}
+
+logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
@@ -63,14 +69,30 @@ def build_query(claim_text: str) -> str:
 
 
 def _wiki_get(params: dict) -> dict:
-    resp = requests.get(
-        WIKI_API_URL,
-        params={**params, "format": "json"},
-        headers=_HEADERS,
-        timeout=HTTP_TIMEOUT_S,
-    )
-    resp.raise_for_status()
-    return resp.json()
+    """GET the Wikipedia API; retry timeouts and server errors (FR-2.7)."""
+    for attempt in range(HTTP_RETRIES + 1):
+        try:
+            resp = requests.get(
+                WIKI_API_URL,
+                params={**params, "format": "json"},
+                headers=_HEADERS,
+                timeout=HTTP_TIMEOUT_S,
+            )
+            resp.raise_for_status()
+            return resp.json()
+        except requests.RequestException as exc:
+            status = getattr(exc.response, "status_code", None)
+            retryable = status is None or status >= 500 or status == 429
+            logger.warning(
+                "Wikipedia request failed (attempt %d of %d): %s",
+                attempt + 1,
+                HTTP_RETRIES + 1,
+                exc,
+            )
+            if not retryable or attempt == HTTP_RETRIES:
+                raise
+            time.sleep(0.5 * 2**attempt)
+    raise RuntimeError("unreachable")
 
 
 def page_url(title: str) -> str:
@@ -97,7 +119,10 @@ def search_wikipedia(query: str) -> list[str]:
 
 
 def fetch_page_text(title: str) -> dict | None:
-    """Fetch plain text of a page, first WIKI_MAX_CHARS chars (FR-2.3)."""
+    """Fetch plain text of a page, cached for CACHE_TTL_DAYS (FR-2.3, FR-2.6)."""
+    cached = get_cached_page(title)
+    if cached is not None:
+        return cached
     try:
         data = _wiki_get(
             {
@@ -114,11 +139,13 @@ def fetch_page_text(title: str) -> dict | None:
     for page in pages.values():
         text = page.get("extract")
         if text:
-            return {
+            result = {
                 "title": page["title"],
                 "url": page_url(page["title"]),
                 "text": text[:WIKI_MAX_CHARS],
             }
+            put_cached_page(title, result)
+            return result
     return None
 
 
