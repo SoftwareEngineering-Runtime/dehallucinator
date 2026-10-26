@@ -170,15 +170,23 @@ def replace_leading_pronoun(claim: str, memory: EntityMemory) -> str:
     return replacement[0].upper() + replacement[1:] + " " + rest
 
 
+def normalise(claim: str) -> str:
+    """Lower-case a claim and drop punctuation and extra spaces, for de-duplication (FR-1.6)."""
+    words = re.sub(r"[^\w\s]", " ", claim.lower()).split()
+    return " ".join(words)
+
+
 def extract_claims(text: str) -> list[Claim]:
     """Return the factual claims found in ``text``.
 
     Non-factual sentences are dropped (DH-162), compound sentences are split
     into one claim per part (DH-163) and leading pronouns are replaced with
-    the entity they refer to (DH-164).
+    the entity they refer to (DH-164). Duplicate claims are removed, keeping
+    the first, and the rest are numbered from 1 without gaps (DH-165).
     """
     sentences = split_sentences(validate_input(text))
     memory = EntityMemory()
+    seen: set[str] = set()
     claims: list[Claim] = []
     for index, sentence in enumerate(sentences):
         if not is_factual(sentence):
@@ -187,5 +195,9 @@ def extract_claims(text: str) -> list[Claim]:
         for part in split_compound(sentence):
             part = replace_leading_pronoun(part, memory)
             memory.update(part)
+            key = normalise(part)
+            if key in seen:
+                continue
+            seen.add(key)
             claims.append(Claim(id=len(claims) + 1, text=part, sentence_index=index))
     return claims

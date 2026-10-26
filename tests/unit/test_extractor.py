@@ -6,6 +6,7 @@ from dehallucinator.claims.extractor import (
     EntityMemory,
     extract_claims,
     is_factual,
+    normalise,
     replace_leading_pronoun,
     split_compound,
     split_sentences,
@@ -180,3 +181,25 @@ def test_pronoun_inside_a_word_is_not_replaced():
     memory = EntityMemory()
     memory.update("Paris is in France.")
     assert replace_leading_pronoun("Items are sold in Paris.", memory) == "Items are sold in Paris."
+
+
+def test_tc_1_09_duplicate_claims_are_removed():
+    claims = extract_claims("Paris is in France. paris is in France!")
+    assert [c.text for c in claims] == ["Paris is in France."]
+    assert [(c.id, c.sentence_index) for c in claims] == [(1, 0)]
+
+
+def test_ids_have_no_gaps_after_duplicates_are_removed():
+    text = "Mars is a red planet. Venus is very hot. Mars is a red planet. Jupiter is the largest."
+    claims = extract_claims(text)
+    assert [c.id for c in claims] == [1, 2, 3]
+    assert [c.sentence_index for c in claims] == [0, 1, 3]
+
+
+def test_duplicate_found_after_pronoun_replacement():
+    claims = extract_claims("The Eiffel Tower is in Paris. It is in Paris.")
+    assert [c.text for c in claims] == ["The Eiffel Tower is in Paris."]
+
+
+def test_normalise_ignores_case_punctuation_and_spaces():
+    assert normalise("  Paris,  is in FRANCE!! ") == "paris is in france"
