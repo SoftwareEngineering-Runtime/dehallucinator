@@ -31,6 +31,21 @@ OPINION_PATTERN = re.compile(r"\b(" + "|".join(OPINION_MARKERS) + r")\b", re.IGN
 COMPOUND_SPLIT_PATTERN = re.compile(r"\s*;\s*|,\s+(?:and|but)\s+", re.IGNORECASE)
 SUBJECT_DEPS = ("nsubj", "nsubjpass", "expl")
 
+# Pronoun replacement (FR-1.5): which pronouns refer to people and which to things.
+PERSON_PRONOUNS = {"he": False, "she": False, "his": True, "her": True}
+THING_PRONOUNS = {"it": False, "its": True, "they": False, "their": True}
+NAMED_ENTITY_LABELS = (
+    "PERSON",
+    "NORP",
+    "FAC",
+    "ORG",
+    "GPE",
+    "LOC",
+    "PRODUCT",
+    "EVENT",
+    "WORK_OF_ART",
+)
+
 
 @lru_cache(maxsize=1)
 def get_nlp() -> Language:
@@ -106,17 +121,71 @@ def split_compound(sentence: str) -> list[str]:
     return [left, *split_compound(right)]
 
 
+class EntityMemory:
+    """Remembers the most recent person and thing named so far (FR-1.5)."""
+
+    def __init__(self) -> None:
+        self.person: str | None = None
+        self.thing: str | None = None
+
+    def update(self, text: str) -> None:
+        """Remember the named entities in ``text``; a sentence's subject wins over others."""
+        doc = get_nlp()(text)
+        subjects = {chunk.root.i: chunk.text for chunk in doc.noun_chunks}
+        person = thing = None
+        person_is_subject = thing_is_subject = False
+        for ent in doc.ents:
+            if ent.label_ not in NAMED_ENTITY_LABELS:
+                continue
+            # Use the full noun phrase ("The Eiffel Tower") when the entity is the subject.
+            is_subject = ent.root.dep_ in SUBJECT_DEPS
+            name = subjects.get(ent.root.i, ent.text) if is_subject else ent.text
+            if ent.label_ == "PERSON":
+                if not person_is_subject:
+                    person, person_is_subject = name, is_subject
+            elif not thing_is_subject:
+                thing, thing_is_subject = name, is_subject
+        self.person = person or self.person
+        self.thing = thing or self.thing
+
+
+def replace_leading_pronoun(claim: str, memory: EntityMemory) -> str:
+    """Replace a leading pronoun with the entity it refers to (FR-1.5).
+
+    "He"/"She" use the last person named and "It"/"They" the last thing; the
+    possessive forms become "<entity>'s". The claim is unchanged if no entity
+    has been named yet.
+    """
+    first, _, rest = claim.partition(" ")
+    pronoun = first.lower()
+    if pronoun in PERSON_PRONOUNS:
+        entity, possessive = memory.person, PERSON_PRONOUNS[pronoun]
+    elif pronoun in THING_PRONOUNS:
+        entity, possessive = memory.thing, THING_PRONOUNS[pronoun]
+    else:
+        return claim
+    if entity is None or not rest:
+        return claim
+    replacement = entity + "'s" if possessive else entity
+    return replacement[0].upper() + replacement[1:] + " " + rest
+
+
 def extract_claims(text: str) -> list[Claim]:
     """Return the factual claims found in ``text``.
 
-    Non-factual sentences are dropped (DH-162) and compound sentences are
-    split into one claim per part (DH-163).
+    Non-factual sentences are dropped (DH-162), compound sentences are split
+    into one claim per part (DH-163) and leading pronouns are replaced with
+    the entity they refer to (DH-164).
     """
     sentences = split_sentences(validate_input(text))
+    memory = EntityMemory()
     claims: list[Claim] = []
     for index, sentence in enumerate(sentences):
         if not is_factual(sentence):
+            memory.update(sentence)
             continue
         for part in split_compound(sentence):
+            part = replace_leading_pronoun(part, memory)
+            memory.update(part)
             claims.append(Claim(id=len(claims) + 1, text=part, sentence_index=index))
     return claims

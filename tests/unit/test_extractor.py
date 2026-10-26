@@ -3,8 +3,10 @@
 import pytest
 
 from dehallucinator.claims.extractor import (
+    EntityMemory,
     extract_claims,
     is_factual,
+    replace_leading_pronoun,
     split_compound,
     split_sentences,
     validate_input,
@@ -34,7 +36,7 @@ def test_validate_input_strips_surrounding_whitespace():
 
 def test_tc_1_03_splits_two_sentences():
     claims = extract_claims("Paris is in France. It is a large city.")
-    assert [c.text for c in claims] == ["Paris is in France.", "It is a large city."]
+    assert [c.text for c in claims] == ["Paris is in France.", "Paris is a large city."]
 
 
 def test_abbreviations_do_not_cause_false_splits():
@@ -104,7 +106,7 @@ def test_all_sentences_non_factual_returns_empty_list():
 
 
 def test_tc_1_07_compound_sentence_is_split():
-    claims = extract_claims("Einstein was born in 1879, and Einstein won the Nobel Prize in 1921.")
+    claims = extract_claims("Einstein was born in 1879, and he won the Nobel Prize in 1921.")
     assert [c.text for c in claims] == [
         "Einstein was born in 1879.",
         "Einstein won the Nobel Prize in 1921.",
@@ -138,3 +140,43 @@ def test_part_without_its_own_subject_is_not_split():
 )
 def test_semicolon_and_multiple_split_points(sentence, parts):
     assert split_compound(sentence) == parts
+
+
+def test_tc_1_08_leading_pronoun_is_replaced():
+    claims = extract_claims("The Eiffel Tower is in Paris. It is 330 m tall.")
+    assert [c.text for c in claims] == [
+        "The Eiffel Tower is in Paris.",
+        "The Eiffel Tower is 330 m tall.",
+    ]
+
+
+def test_person_and_possessive_pronouns_use_the_last_person():
+    text = (
+        "Marie Curie moved to Paris in 1891. She won two Nobel Prizes. "
+        "Her husband was Pierre Curie."
+    )
+    assert [c.text for c in extract_claims(text)] == [
+        "Marie Curie moved to Paris in 1891.",
+        "Marie Curie won two Nobel Prizes.",
+        "Marie Curie's husband was Pierre Curie.",
+    ]
+
+
+def test_it_and_he_pick_different_entities():
+    text = "Apple was founded by Steve Jobs in 1976. It is based in Cupertino. He died in 2011."
+    assert [c.text for c in extract_claims(text)][1:] == [
+        "Apple is based in Cupertino.",
+        "Steve Jobs died in 2011.",
+    ]
+
+
+def test_pronoun_without_earlier_entity_is_kept():
+    assert replace_leading_pronoun("It is raining heavily today.", EntityMemory()) == (
+        "It is raining heavily today."
+    )
+
+
+def test_pronoun_inside_a_word_is_not_replaced():
+    memory = EntityMemory()
+    memory.update("Paris is in France.")
+    assert replace_leading_pronoun("Items are sold in Paris.", memory) == "Items are sold in Paris."
