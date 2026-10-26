@@ -14,6 +14,7 @@ from dehallucinator.config import (
     WIKI_MAX_CHARS,
     WIKI_TOP_PAGES,
 )
+from dehallucinator.evidence.ranker import rank_snippets
 from dehallucinator.models import Claim, Evidence
 
 _HEADERS = {"User-Agent": USER_AGENT}
@@ -121,5 +122,24 @@ def fetch_page_text(title: str) -> dict | None:
 
 
 def retrieve_evidence(claims: list[Claim]) -> list[Evidence]:
-    """Return evidence snippets for the given claims."""
-    raise NotImplementedError("Implemented by Role B in Sprint 1")
+    """Return evidence snippets for the given claims (FR-2)."""
+    results: list[Evidence] = []
+    for claim in claims:
+        query = build_query(claim.text)
+        pages = []
+        for title in search_wikipedia(query):
+            page = fetch_page_text(title)
+            if page:
+                pages.append(page)
+        for hit in rank_snippets(claim.text, pages):
+            results.append(
+                Evidence(
+                    claim_id=claim.id,
+                    source="wikipedia",
+                    source_url=hit["url"],
+                    title=hit["title"],
+                    snippet=hit["text"],
+                    relevance=hit["relevance"],
+                )
+            )
+    return results
