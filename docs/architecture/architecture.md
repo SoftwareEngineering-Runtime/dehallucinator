@@ -5,7 +5,7 @@
 Sections:
 1. High-Level Architecture Overview (Role A) – this file
 2. Evidence Retriever component (Role B) – `architecture_evidence_retriever.md`
-3. Verifier component (Role C) – to be added
+3. Verifier component (Role C) – [Architecture — Verifier & Scorer](architecture_verifier.md)
 4. API, UI and deployment (Role D) – [`architecture_api_ui_deployment.md`](architecture_api_ui_deployment.md)
 
 ---
@@ -36,6 +36,7 @@ stage's output and adds to it.
 - **Verifier & Scorer (Role C):** uses an NLI model to label each claim SUPPORTED,
   CONTRADICTED or NOT_ENOUGH_INFO, and computes a trust score.
   Interface: `verify_claims(claims, evidence) -> list[Verdict]`.
+  See [Architecture — Verifier & Scorer](architecture_verifier.md) for the UML class and sequence diagrams.
 - **Corrector & Integrator (Role D):** rewrites the answer using the verdicts and exposes the
   whole pipeline through the API, UI and decorator. Interface: `check_answer(text) -> CheckedAnswer`.
 
