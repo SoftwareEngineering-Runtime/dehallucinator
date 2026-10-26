@@ -14,6 +14,7 @@ from dehallucinator.config import (
     WIKI_MAX_CHARS,
     WIKI_TOP_PAGES,
 )
+from dehallucinator.evidence.kb import load_kb_pages
 from dehallucinator.evidence.ranker import rank_snippets
 from dehallucinator.models import Claim, Evidence
 
@@ -131,11 +132,13 @@ def retrieve_evidence(claims: list[Claim]) -> list[Evidence]:
             page = fetch_page_text(title)
             if page:
                 pages.append(page)
+        pages.extend(load_kb_pages())  # local KB works even when offline (FR-2.4)
         for hit in rank_snippets(claim.text, pages):
+            is_kb = hit["url"].startswith("kb://")
             results.append(
                 Evidence(
                     claim_id=claim.id,
-                    source="wikipedia",
+                    source="local_kb" if is_kb else "wikipedia",
                     source_url=hit["url"],
                     title=hit["title"],
                     snippet=hit["text"],
