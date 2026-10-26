@@ -223,3 +223,4 @@ htmlcov/
 coverage.xml
 report.xml
 .DS_Store
+data/wiki_cache.sqlite3
