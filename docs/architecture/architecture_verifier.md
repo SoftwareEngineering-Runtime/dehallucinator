@@ -89,3 +89,72 @@ It averages these values, multiplies the result by 100, and rounds to one decima
 ## 9. Output to the Next Stage
 
 The verifier returns one `Verdict` per claim, including its ID, label, score, and best evidence where available. The Corrector uses these verdicts and their evidence to decide whether to preserve a sentence, attach a source, flag uncertainty, or replace contradicted content.
+
+## 10. UML Class Diagram
+
+The diagram shows the shared data models used by the verifier and the relationships between the module-level verification functions and those models.
+
+```mermaid
+classDiagram
+    class VerifierModule {
+        +verify_claims(claims, evidence) list~Verdict~
+        +trust_score(verdicts) float
+    }
+
+    class Claim {
+        +int id
+        +str text
+        +int sentence_index
+    }
+
+    class Evidence {
+        +int claim_id
+        +str source
+        +str source_url
+        +str title
+        +str snippet
+        +float relevance
+    }
+
+    class Verdict {
+        +int claim_id
+        +Label label
+        +float score
+        +Evidence best_evidence
+    }
+
+    VerifierModule ..> Claim : reads
+    VerifierModule ..> Evidence : evaluates
+    VerifierModule ..> Verdict : creates
+    Verdict o-- Evidence : optional best_evidence
+```
+
+*Note: `VerifierModule` represents the module-level functions in `verifier.py`, not a Python class.*
+
+## 11. UML Sequence Diagram
+
+The sequence diagram illustrates how `verify_claims()` matches evidence to each claim, handles claims with no matching evidence, obtains NLI predictions, assigns verdicts, and returns the results to the pipeline.
+
+```mermaid
+sequenceDiagram
+    participant Pipeline
+    participant Verifier as Verifier Module
+    participant Model as NLI Model
+
+    Pipeline->>Verifier: verify_claims(claims, evidence)
+    loop For each claim
+        Verifier->>Verifier: Match evidence by claim_id
+        alt No matching evidence
+            Verifier->>Verifier: Create NOT_ENOUGH_INFO verdict
+            Note right of Verifier: Score = 0.0; best_evidence = None
+        else Matching evidence found
+            Verifier->>Model: Predict entailment and contradiction probabilities
+            Model-->>Verifier: Return probabilities for evidence-claim pairs
+            Verifier->>Verifier: Select best evidence and assign verdict
+        end
+    end
+    Verifier-->>Pipeline: Return list of Verdict objects
+    Pipeline->>Verifier: trust_score(verdicts)
+    Verifier->>Verifier: Map verdicts to values and calculate mean
+    Verifier-->>Pipeline: Return trust score (0–100)
+```
