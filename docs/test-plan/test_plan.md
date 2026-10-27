@@ -1,14 +1,13 @@
+
 # Test Plan and Test Cases
 
 **Project 39: Dehallucination Add-On Module ("Dehallucinator")**
+
 Owner: Ralph D'souza (Role C). Each member writes the test cases for their own use case.
 
 ## 1. Scope
 
-This document outlines the testing strategy for the Dehallucination Add-On Module. It covers
-unit testing for individual modules (Claim Extractor, Evidence Retriever, Verifier & Scorer,
-Corrector & Integrator), integration testing for component handoffs, system testing for the
-end-to-end API, and security testing.
+This document outlines the testing strategy for the Dehallucination Add-On Module. It covers unit testing for individual modules (Claim Extractor, Evidence Retriever, Verifier & Scorer, Corrector & Integrator), integration testing for component handoffs, system testing for the end-to-end API, and security testing.
 
 ## 2. Test Levels
 
@@ -44,15 +43,13 @@ end-to-end API, and security testing.
 | FR-3.2 | TC-3-06 |
 | FR-3.3 | TC-3-02, TC-3-03, TC-3-05 |
 | FR-3.4 | TC-3-04 |
-| FR-3.5 | No automated test identified |
+| FR-3.5 | TC-3-10, TC-3-11 |
 | FR-3.6 | TC-3-08, TC-3-09 |
-| FR-4.x (Role D) | _to be added_ |
+| FR-4.x (Role D) | *To be added* |
 
 ## 6. Test Cases
 
-Each use case has 8–10 test cases, with at least 2 error or edge cases. "Automated test" names
-the pytest function that checks the case. The Actual and Pass/Fail columns are filled in
-during Sprint 3 (validation report).
+Each use case has 8–10 test cases, with at least 2 error or edge cases. "Automated test" names the pytest function that checks the case. The Actual and Pass/Fail columns are filled in during Sprint 3 (validation report).
 
 ### UC-1: Extract factual claims (Owner: Sai Nikitha Perumalla, Role A)
 
@@ -60,7 +57,7 @@ Automated tests: `tests/unit/test_extractor.py`
 
 | TC ID | FR | Type | Description | Input | Expected result | Automated test | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|---|---|
-| TC-1-01 | FR-1.1 | Error | Empty input is rejected | `""` and `"   \n\t  "` | `ValueError("Input text is empty")` | `test_tc_1_01_empty_input_is_rejected` | | |
+| TC-1-01 | FR-1.1 | Error | Empty input is rejected | `""` and `"  \n\t  "` | `ValueError("Input text is empty")` | `test_tc_1_01_empty_input_is_rejected` | | |
 | TC-1-02 | FR-1.1 | Boundary | Input over the limit is rejected | 5001 characters (and exactly 5000) | 5001 → `ValueError` mentioning 5000; 5000 is accepted | `test_tc_1_02_input_over_limit_is_rejected`, `test_input_exactly_at_limit_is_accepted` | | |
 | TC-1-03 | FR-1.2 | Normal | Text is split into sentences | "Paris is in France. It is a large city." | 2 claims with those two sentences; "Dr." / "U.S." do not cause false splits | `test_tc_1_03_splits_two_sentences`, `test_abbreviations_do_not_cause_false_splits` | | |
 | TC-1-04 | FR-1.3 | Normal | Questions are dropped | "Paris is the capital of France. Is it the largest city?" | Only the first sentence is a claim | `test_tc_1_04_questions_are_dropped` | | |
@@ -79,6 +76,7 @@ See [`docs/test_cases_UC-2.md`](../test_cases_UC-2.md) (TC-2-01 to TC-2-10).
 
 ### UC-3: Verify a claim against its evidence (Owner: Ralph D'souza, Role C)
 
+Automated tests: `tests/unit/test_verifier.py`
 
 | TC ID | FR | Type | Description | Input | Expected result | Automated test | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|---|---|
@@ -90,10 +88,12 @@ See [`docs/test_cases_UC-2.md`](../test_cases_UC-2.md) (TC-2-01 to TC-2-10).
 | TC-3-07 | FR-3.1 | Positive | Model and tokenizer are loaded on demand | Model and tokenizer initially unset | Both loaded using configured NLI model | `test_tc_3_07_model_is_loaded_lazily` | | |
 | TC-3-08 | FR-3.6 | Boundary | Empty verdict list returns the default trust score | Empty list `[]` | Trust score is 100.0 | `test_trust_score_empty_list` | | |
 | TC-3-09 | FR-3.6 | Normal | Trust score averages mixed verdicts | One SUPPORTED, one NOT_ENOUGH_INFO, one CONTRADICTED verdict | Trust score is 50.0 | `test_trust_score_mixed_verdicts` | | |
+| TC-3-10 | FR-3.5 | Negative | A number mismatch for the same named entity forces contradiction | Claim: “Einstein was born in 1879.” Evidence: “Einstein was born in 1899.” | CONTRADICTED; score is `max(max_contradiction, 0.75)`; matching evidence returned | `test_tc_3_10_year_mismatch_forces_contradicted` | | |
+| TC-3-11 | FR-3.5 | Positive | Matching numbers do not trigger the mismatch rule | Claim: “Einstein was born in 1879.” Evidence: “Einstein was born in 1879.” | SUPPORTED; score 0.9; matching evidence returned | `test_tc_3_11_matching_numbers_remain_supported` | | |
 
 ### UC-4: Check and correct a chatbot answer (Owner: Satwik, Role D)
 
-_To be added (DH-196)._
+*To be added (DH-196).*
 
 | TC ID | FR | Type | Description | Input | Expected result | Automated test | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|---|---|

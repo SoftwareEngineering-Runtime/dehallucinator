@@ -165,3 +165,72 @@ def test_tc_3_07_model_is_loaded_lazily(mock_tokenizer_load, mock_model_load):
     assert model is mock_model
     mock_tokenizer_load.assert_called_once_with(verifier.config.NLI_MODEL)
     mock_model_load.assert_called_once_with(verifier.config.NLI_MODEL)
+
+
+@patch("dehallucinator.verify.verifier._predict")
+def test_tc_3_10_year_mismatch_forces_contradicted(mock_predict):
+    mock_predict.return_value = [{"entailment": 0.9, "contradiction": 0.05, "neutral": 0.05}]
+
+    claims = [Claim(id=1, text="Einstein was born in 1879.", sentence_index=0)]
+    evidence = [
+        Evidence(
+            claim_id=1,
+            source="local_kb",
+            source_url="kb://test",
+            title="Einstein",
+            snippet="Einstein was born in 1899.",
+            relevance=1.0,
+        )
+    ]
+
+    verdicts = verify_claims(claims, evidence)
+
+    assert verdicts[0].label == "CONTRADICTED"
+    assert verdicts[0].score == max(0.05, 0.75)
+    assert verdicts[0].best_evidence == evidence[0]
+
+
+@patch("dehallucinator.verify.verifier._predict")
+def test_tc_3_11_matching_numbers_remain_supported(mock_predict):
+    mock_predict.return_value = [{"entailment": 0.9, "contradiction": 0.05, "neutral": 0.05}]
+
+    claims = [Claim(id=2, text="Einstein was born in 1879.", sentence_index=0)]
+    evidence = [
+        Evidence(
+            claim_id=2,
+            source="local_kb",
+            source_url="kb://test",
+            title="Einstein",
+            snippet="Einstein was born in 1879.",
+            relevance=1.0,
+        )
+    ]
+
+    verdicts = verify_claims(claims, evidence)
+
+    assert verdicts[0].label == "SUPPORTED"
+    assert verdicts[0].score == 0.9
+    assert verdicts[0].best_evidence == evidence[0]
+
+
+@patch("dehallucinator.verify.verifier._predict")
+def test_tc_3_12_number_mid_sentence_remains_supported(mock_predict):
+    mock_predict.return_value = [{"entailment": 0.9, "contradiction": 0.05, "neutral": 0.05}]
+
+    claims = [Claim(id=3, text="Einstein was born in 1879.", sentence_index=0)]
+    evidence = [
+        Evidence(
+            claim_id=3,
+            source="local_kb",
+            source_url="kb://test",
+            title="Einstein",
+            snippet="Einstein was born in 1879 in Ulm.",
+            relevance=1.0,
+        )
+    ]
+
+    verdicts = verify_claims(claims, evidence)
+
+    assert verdicts[0].label == "SUPPORTED"
+    assert verdicts[0].score == 0.9
+    assert verdicts[0].best_evidence == evidence[0]
