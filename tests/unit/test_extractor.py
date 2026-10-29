@@ -3,8 +3,12 @@
 import pytest
 
 from dehallucinator.claims.extractor import (
+    EntityMemory,
     extract_claims,
     is_factual,
+    normalise,
+    replace_leading_pronoun,
+    split_compound,
     split_sentences,
     validate_input,
 )
@@ -33,7 +37,7 @@ def test_validate_input_strips_surrounding_whitespace():
 
 def test_tc_1_03_splits_two_sentences():
     claims = extract_claims("Paris is in France. It is a large city.")
-    assert [c.text for c in claims] == ["Paris is in France.", "It is a large city."]
+    assert [c.text for c in claims] == ["Paris is in France.", "Paris is a large city."]
 
 
 def test_abbreviations_do_not_cause_false_splits():
@@ -100,3 +104,102 @@ def test_ids_have_no_gaps_and_keep_original_sentence_index():
 
 def test_all_sentences_non_factual_returns_empty_list():
     assert extract_claims("I think this is great. Why not?") == []
+
+
+def test_tc_1_07_compound_sentence_is_split():
+    claims = extract_claims("Einstein was born in 1879, and he won the Nobel Prize in 1921.")
+    assert [c.text for c in claims] == [
+        "Einstein was born in 1879.",
+        "Einstein won the Nobel Prize in 1921.",
+    ]
+    assert [c.sentence_index for c in claims] == [0, 0]
+
+
+def test_list_with_and_is_not_split():
+    assert split_compound("Salt and pepper are spices.") == ["Salt and pepper are spices."]
+    assert split_compound("Oxygen, carbon, and nitrogen are elements.") == [
+        "Oxygen, carbon, and nitrogen are elements."
+    ]
+
+
+def test_part_without_its_own_subject_is_not_split():
+    assert split_compound("The tower was old, but strong.") == ["The tower was old, but strong."]
+
+
+@pytest.mark.parametrize(
+    ("sentence", "parts"),
+    [
+        (
+            "Paris is in France; Berlin is in Germany.",
+            ["Paris is in France.", "Berlin is in Germany."],
+        ),
+        (
+            "Rome is very old, but Paris is older, and Berlin is new.",
+            ["Rome is very old.", "Paris is older.", "Berlin is new."],
+        ),
+    ],
+)
+def test_semicolon_and_multiple_split_points(sentence, parts):
+    assert split_compound(sentence) == parts
+
+
+def test_tc_1_08_leading_pronoun_is_replaced():
+    claims = extract_claims("The Eiffel Tower is in Paris. It is 330 m tall.")
+    assert [c.text for c in claims] == [
+        "The Eiffel Tower is in Paris.",
+        "The Eiffel Tower is 330 m tall.",
+    ]
+
+
+def test_person_and_possessive_pronouns_use_the_last_person():
+    text = (
+        "Marie Curie moved to Paris in 1891. She won two Nobel Prizes. "
+        "Her husband was Pierre Curie."
+    )
+    assert [c.text for c in extract_claims(text)] == [
+        "Marie Curie moved to Paris in 1891.",
+        "Marie Curie won two Nobel Prizes.",
+        "Marie Curie's husband was Pierre Curie.",
+    ]
+
+
+def test_it_and_he_pick_different_entities():
+    text = "Apple was founded by Steve Jobs in 1976. It is based in Cupertino. He died in 2011."
+    assert [c.text for c in extract_claims(text)][1:] == [
+        "Apple is based in Cupertino.",
+        "Steve Jobs died in 2011.",
+    ]
+
+
+def test_pronoun_without_earlier_entity_is_kept():
+    assert replace_leading_pronoun("It is raining heavily today.", EntityMemory()) == (
+        "It is raining heavily today."
+    )
+
+
+def test_pronoun_inside_a_word_is_not_replaced():
+    memory = EntityMemory()
+    memory.update("Paris is in France.")
+    assert replace_leading_pronoun("Items are sold in Paris.", memory) == "Items are sold in Paris."
+
+
+def test_tc_1_09_duplicate_claims_are_removed():
+    claims = extract_claims("Paris is in France. paris is in France!")
+    assert [c.text for c in claims] == ["Paris is in France."]
+    assert [(c.id, c.sentence_index) for c in claims] == [(1, 0)]
+
+
+def test_ids_have_no_gaps_after_duplicates_are_removed():
+    text = "Mars is a red planet. Venus is very hot. Mars is a red planet. Jupiter is the largest."
+    claims = extract_claims(text)
+    assert [c.id for c in claims] == [1, 2, 3]
+    assert [c.sentence_index for c in claims] == [0, 1, 3]
+
+
+def test_duplicate_found_after_pronoun_replacement():
+    claims = extract_claims("The Eiffel Tower is in Paris. It is in Paris.")
+    assert [c.text for c in claims] == ["The Eiffel Tower is in Paris."]
+
+
+def test_normalise_ignores_case_punctuation_and_spaces():
+    assert normalise("  Paris,  is in FRANCE!! ") == "paris is in france"
