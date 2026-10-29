@@ -1,0 +1,30 @@
+# Keep the build context small and free of secrets (DH-181).
+.git
+.gitignore
+.venv
+venv
+env
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+.ruff_cache
+.coverage
+.coverage.*
+htmlcov
+coverage.xml
+report.xml
+.cache
+data/wiki_cache.sqlite3
+.env
+.env.*
+*.log
+
+# Not needed at runtime
+tests
+docs
+Jenkinsfile
+sonar-project.properties
+.dockerignore
+Dockerfile
+.vscode
+.idea
