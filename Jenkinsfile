@@ -1,4 +1,4 @@
-// Basic CI pipeline (DH-153, manual 11.1): Checkout -> Setup -> Lint -> Unit tests.
+// CI pipeline (DH-153, DH-182): Checkout -> Setup -> Lint -> Security scan -> Unit tests.
 // Runs as a Multibranch Pipeline job, so every branch and PR is built.
 //
 // Set the PYTHON environment variable in Jenkins (Manage Jenkins -> System ->
@@ -45,6 +45,15 @@ pipeline {
             steps {
                 runCmd "${venvPython()} -m ruff format --check ."
                 runCmd "${venvPython()} -m ruff check ."
+            }
+        }
+
+        // DH-182, NFR-3: fail on any High-severity bandit issue or any known
+        // vulnerability in the pinned dependencies.
+        stage('Security scan') {
+            steps {
+                runCmd "${venvPython()} -m bandit -r src ui -lll"
+                runCmd "${venvPython()} -m pip_audit -r requirements.txt --progress-spinner off"
             }
         }
 

@@ -98,3 +98,13 @@ traceability rows
 What I changed: linked FR-4.2, FR-4.5 and FR-4.6 to the unit, integration and system tests
 that cover them, since they have no TC-4 number of their own
 I can explain it: TODO
+
+## DH-182 bandit and pip-audit in CI – 2026-10-24
+Tool: Claude
+Prompt: "Add a Security scan stage to the Jenkinsfile for NFR-3 that fails on High bandit
+issues or known vulnerabilities, and fix whatever it finds."
+What I kept: bandit -r src ui -lll (High severity only) and pip-audit -r requirements.txt
+What I changed: upgraded the vulnerable pins pip-audit found (pillow 12.3.0 -> 13.0.0,
+certifi, filelock, opentelemetry-api) and streamlit 1.64.0 -> 1.66.1, because 1.64 does not
+allow pillow 13; checked that bandit really exits 1 on a High issue
+I can explain it: TODO
