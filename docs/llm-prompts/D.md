@@ -73,3 +73,18 @@ What I kept: functools.wraps, the isinstance check before calling the pipeline, 
 (including decorating a method)
 What I changed: typed it with ParamSpec so editors still show the wrapped function's arguments
 I can explain it: TODO
+
+## DH-179 demo chatbot UI and samples – 2026-10-24
+Tool: Claude
+Prompt: "Build the Streamlit demo UI for FR-4.5 and FR-4.6: a drop-down of 10 sample answers
+from data/samples.json plus a paste box (max 5000 chars), one Check button, colour-coded claims
+with source links, the trust score and the corrected answer, with all text HTML-escaped. Write
+10 sample answers on our KB topics, some with planted mistakes. Test it with the pipeline faked."
+What I kept: the ui_render module (claim cards, escaping, http-only links), the thin app.py,
+the AppTest page tests, the samples
+What I changed: checked every planted mistake against the KB files and against extract_claims
+so each one becomes its own claim; added two fully correct samples so the demo also shows a
+clean answer; ran all 10 through the real pipeline once Roles A to C were merged (8 of 8
+planted mistakes caught, no true sentence flagged) after rewording four samples that the
+retriever matched to the wrong page
+I can explain it: TODO

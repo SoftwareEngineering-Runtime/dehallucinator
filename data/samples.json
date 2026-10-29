@@ -1,1 +1,98 @@
-[]
+[
+  {
+    "id": 1,
+    "title": "Eiffel Tower",
+    "kb_file": "eiffel_tower.txt",
+    "answer": "The Eiffel Tower was completed in 1899. The Eiffel Tower is about 330 metres tall. The Eiffel Tower is the tallest structure in Paris.",
+    "hallucinations": [
+      "The Eiffel Tower was completed in 1899."
+    ],
+    "facts": "Built from 1887 to 1889; 330 metres tall; tallest structure in Paris."
+  },
+  {
+    "id": 2,
+    "title": "Albert Einstein",
+    "kb_file": "albert_einstein.txt",
+    "answer": "Albert Einstein was born in Vienna in 1885. Albert Einstein was a theoretical physicist.",
+    "hallucinations": [
+      "Albert Einstein was born in Vienna in 1885."
+    ],
+    "facts": "Born in Ulm on 14 March 1879."
+  },
+  {
+    "id": 3,
+    "title": "Taj Mahal",
+    "kb_file": "taj_mahal.txt",
+    "answer": "The Taj Mahal is a marble mausoleum in Agra, India. The Taj Mahal was commissioned by the emperor Akbar.",
+    "hallucinations": [
+      "The Taj Mahal was commissioned by the emperor Akbar."
+    ],
+    "facts": "Commissioned in 1631 by Shah Jahan for Mumtaz Mahal, on the Yamuna in Agra."
+  },
+  {
+    "id": 4,
+    "title": "Mount Everest",
+    "kb_file": "mount_everest.txt",
+    "answer": "Edmund Hillary and Tenzing Norgay first climbed Mount Everest in 1963. Mount Everest is the highest mountain on Earth.",
+    "hallucinations": [
+      "Edmund Hillary and Tenzing Norgay first climbed Mount Everest in 1963."
+    ],
+    "facts": "Tenzing Norgay and Edmund Hillary made the first documented ascent in 1953."
+  },
+  {
+    "id": 5,
+    "title": "Jupiter",
+    "kb_file": "jupiter.txt",
+    "answer": "Jupiter is the third planet from the Sun. Jupiter is the largest planet in the Solar System. Ganymede is larger than the planet Mercury.",
+    "hallucinations": [
+      "Jupiter is the third planet from the Sun."
+    ],
+    "facts": "Fifth planet from the Sun and the largest; Ganymede is larger than Mercury."
+  },
+  {
+    "id": 6,
+    "title": "Mars",
+    "kb_file": "mars.txt",
+    "answer": "Mars is the fourth planet from the Sun. Mars has three natural satellites.",
+    "hallucinations": [
+      "Mars has three natural satellites."
+    ],
+    "facts": "Fourth planet; two moons, Phobos and Deimos."
+  },
+  {
+    "id": 7,
+    "title": "Marie Curie",
+    "kb_file": "marie_curie.txt",
+    "answer": "Marie Curie was the first person to win a Nobel Prize twice. Marie Curie became the first woman professor at the University of Oxford in 1906.",
+    "hallucinations": [
+      "Marie Curie became the first woman professor at the University of Oxford in 1906."
+    ],
+    "facts": "First person to win two Nobel Prizes; in 1906 the first woman professor at the University of Paris."
+  },
+  {
+    "id": 8,
+    "title": "Telephone",
+    "kb_file": "telephone.txt",
+    "answer": "Alexander Graham Bell received the first patent for the electric telephone in 1880. The telephone is a telecommunications device.",
+    "hallucinations": [
+      "Alexander Graham Bell received the first patent for the electric telephone in 1880."
+    ],
+    "facts": "Bell received the first US patent for the electric telephone in March 1876."
+  },
+  {
+    "id": 9,
+    "title": "France (all correct)",
+    "kb_file": "france.txt",
+    "answer": "France is a country primarily located in Western Europe. Paris is the capital of France.",
+    "hallucinations": [],
+    "facts": "Country primarily located in Western Europe; capital and largest city is Paris."
+  },
+  {
+    "id": 10,
+    "title": "Japan and India (all correct)",
+    "kb_file": "japan.txt",
+    "answer": "Tokyo is the capital of Japan. India is the most populous country in the world.",
+    "hallucinations": [],
+    "facts": "Tokyo is Japan's capital (japan.txt); India is the most populous country (india.txt)."
+  }
+]
