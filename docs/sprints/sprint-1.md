@@ -115,6 +115,3 @@ SonarQube quality gate passing on every merged pull request.
 - Run `ruff format . && ruff check . && pytest` before every push (or add a pre-commit hook).
 - Write documents directly in Markdown and check the GitHub preview before opening a PR.
 - Schedule integration tests early in Sprint 2, now that the full pipeline exists.
-
-**Burndown:** _screenshot to be added (`docs/sprints/img/sprint-1-burndown.png`)._
-<!-- Then replace the line above with: ![Sprint 1 burndown](img/sprint-1-burndown.png) -->
