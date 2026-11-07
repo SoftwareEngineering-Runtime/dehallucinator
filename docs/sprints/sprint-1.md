@@ -8,8 +8,10 @@ Jenkins builds and tests every push.
 **Committed stories (24, 62 points):** DH-161, DH-162, DH-166, DH-167, DH-168, DH-171,
 DH-172, DH-173, DH-175, DH-176, DH-177, DH-184, DH-185, DH-186, DH-187, DH-193, DH-194,
 DH-195, DH-196, DH-197, DH-210, DH-211, DH-212, DH-213
-**Completed:** <!-- fill in at the end of the sprint --> _N of 24 (N of 62 points)_
-**Carried over to Sprint 2:** <!-- fill in at the end of the sprint --> _..._
+**Completed:** 21 of 24 (57 of 62 points)
+**Carried over to Sprint 2:** DH-196 (UC-4 test cases, not started), DH-212 (Sprint 0 log,
+waiting for review on PR #23) and DH-213 (this log). The sprint was closed in Jira on 26 Oct,
+once the late pull requests #22, #24 and #25 had been merged.
 
 ### Features (Epics E1–E5)
 
@@ -33,23 +35,21 @@ DH-195, DH-196, DH-197, DH-210, DH-211, DH-212, DH-213
 |---|---|---|---|---|---|
 | DH-184 | Architecture overview and diagram | Nikitha (A) | 2 | PR #15 | Done |
 | DH-185 | Architecture: Evidence Retriever | Shreya (B) | 1 | PR #13 | Done |
-| DH-186 | Architecture: Verifier | Ralph (C) | 1 | | To Do |
+| DH-186 | Architecture: Verifier | Ralph (C) | 1 | PR #25 | Done |
 | DH-187 | Architecture: API, UI and deployment | Satwik (D) | 2 | PR #21 | Done |
 | DH-193 | Test cases TC-1-01..10 (UC-1) | Nikitha (A) | 2 | PR #15 | Done |
 | DH-194 | Test cases TC-2-01..10 (UC-2) | Shreya (B) | 2 | PR #14 | Done |
-| DH-195 | Test cases TC-3-01..10 (UC-3) and test plan | Ralph (C) | 2 | PR #17 | In Review |
-| DH-196 | Test cases TC-4-01..10 (UC-4) | Satwik (D) | 2 | | To Do |
-| DH-197 | Integration tests for the full pipeline | Ralph (C) | 3 | | To Do |
-| DH-210 | Sprint 1 planning, stand-ups and progress tracking | Nikitha (A) | 3 | this log | In Progress |
-| DH-211 | Review and merge Sprint 1 pull requests | Nikitha (A) | 3 | PR reviews | In Progress |
-| DH-212 | Sprint 0 log | Nikitha (A) | 1 | `sprint-0.md` | In Review |
-| DH-213 | Sprint 1 review and retrospective | Nikitha (A) | 2 | this log | In Progress |
+| DH-195 | Test cases TC-3-01..10 (UC-3) and test plan | Ralph (C) | 2 | PR #22 (replaced #17) | Done |
+| DH-196 | Test cases TC-4-01..10 (UC-4) | Satwik (D) | 2 | | Carried over |
+| DH-197 | Integration tests for the full pipeline | Ralph (C) | 3 | PR #24 | Done |
+| DH-210 | Sprint 1 planning, stand-ups and progress tracking | Nikitha (A) | 3 | this log, Jira board | Done |
+| DH-211 | Review and merge Sprint 1 pull requests | Nikitha (A) | 3 | reviews on PRs #6–#25 | Done |
+| DH-212 | Sprint 0 log | Nikitha (A) | 1 | PR #23 | Carried over |
+| DH-213 | Sprint 1 review and retrospective | Nikitha (A) | 2 | this log | Carried over |
 
-<!-- Update the Status column on 14 Oct before the review call. -->
-
-**Quality at the end of the sprint** (from `pytest --cov` and SonarQube Cloud, 11 Oct):
-85 unit tests passing, 92% line and branch coverage, `ruff` clean, SonarQube quality gate
-passing on every merged pull request.
+**Quality at the end of the sprint** (from `pytest --cov` and SonarQube Cloud, 26 Oct):
+88 tests passing (unit and integration), 92% line and branch coverage, `ruff` clean,
+SonarQube quality gate passing on every merged pull request.
 
 ## Planning (5 Oct)
 
@@ -73,22 +73,22 @@ passing on every merged pull request.
 | 11 Oct | Satwik | DH-175: corrector (PR #18); DH-176: pipeline (PR #19); DH-177: REST API (PR #20); DH-187: API/UI/deployment architecture (PR #21) |
 | 11 Oct | Satwik | Fixed the SonarQube reliability finding on PR #18 |
 | 11 Oct | Nikitha | Reviewed and merged PRs #11, #12, #16, #18–#21; Jira board updated |
+| 15 Oct | Ralph | DH-195: UC-3 test cases moved into `test_plan.md` as clean Markdown (PR #22, replaces #17) |
+| 21 Oct | Ralph | DH-197: full-pipeline integration tests (PR #24); DH-186: verifier architecture (PR #25) |
+| 26 Oct | Nikitha | Sprint 1 closed in Jira (21 of 24 done); DH-196, DH-212 and DH-213 moved to Sprint 2 |
 
 ## Review (14 Oct)
 
-<!-- Fill in during the 15-minute call: each person demos their Done tickets. -->
-
-- **Nikitha:** _claim extraction on a sample answer (validation, sentence split, opinion
-  and question filtering); architecture overview and UC-1 test cases in `docs/`._
-- **Shreya:** _search query, Wikipedia fetch and TF-IDF ranking for a sample claim;
-  retriever architecture and UC-2 test cases._
-- **Ralph:** _NLI verdicts and trust score for sample claims; UC-3 test cases._
-- **Satwik:** _`POST /check` returning a corrected answer end to end; API/UI/deployment
-  architecture._
+- **Nikitha:** claim extraction on a sample answer (validation, sentence split, opinion
+  and question filtering); architecture overview and UC-1 test cases in `docs/`.
+- **Shreya:** search query, Wikipedia fetch and TF-IDF ranking for a sample claim;
+  retriever architecture and UC-2 test cases.
+- **Ralph:** NLI verdicts and trust score for sample claims; UC-3 test cases, the verifier
+  architecture and the first integration tests.
+- **Satwik:** `POST /check` returning a corrected answer end to end; API/UI/deployment
+  architecture.
 
 ## Retrospective
-
-<!-- Draft based on what happened this sprint. Confirm or change on the call. -->
 
 **Went well**
 - All four modules work end to end: `POST /check` takes an answer and returns a corrected
@@ -106,6 +106,8 @@ passing on every merged pull request.
 - Some documentation was pasted from a word processor and did not render as Markdown
   on GitHub.
 - Integration tests (DH-197) were not started until the end of the sprint.
+- Four tickets were still open on 14 Oct, so the sprint was only closed on 26 Oct and Sprint 2
+  started late.
 
 **We will change**
 - Open a pull request as soon as each story is done, and aim for the first PRs by the
