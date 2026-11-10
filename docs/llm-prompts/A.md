@@ -29,14 +29,15 @@ What I kept: is_factual, OPINION_PATTERN regex, the tests
 What I changed: used a \b word-boundary regex so "shoulder" is not treated as "should"
 I can explain it: yes
 
-## DH-212 Sprint 0 log – 2026-10-12
+## DH-212 Sprint 0 log – 2026-10-11
 Tool: Claude
 Prompt: "Write docs/sprints/sprint-0.md using the sprint log template in manual Section 13.4.
 Use the Sprint 0 tickets DH-151 to DH-160 from Jira with owner, points and the PR or file that
 proves each one is done. Replace the daily stand-up section with a progress log table built
 from the GitHub PR history and Jira, then add the review and a short retrospective."
 What I kept: the ticket table, progress log, review and retrospective
-What I changed: corrected the PR numbers against GitHub and removed the stand-up section
+What I changed: removed the daily stand-up section; the team agreed to use the progress log
+instead of pasting chat stand-ups
 I can explain it: yes
 
 ## DH-163 compound sentence split – 2026-10-26
