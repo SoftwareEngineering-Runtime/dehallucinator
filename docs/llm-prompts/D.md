@@ -108,3 +108,14 @@ What I changed: upgraded the vulnerable pins pip-audit found (pillow 12.3.0 -> 1
 certifi, filelock, opentelemetry-api) and streamlit 1.64.0 -> 1.66.1, because 1.64 does not
 allow pillow 13; checked that bandit really exits 1 on a High issue
 I can explain it: TODO
+
+## DH-181 Docker image – 2026-10-24
+Tool: Claude
+Prompt: "Write a Dockerfile and .dockerignore for NFR-5 so the API runs with one command and
+the container's /health returns ok."
+What I kept: python:3.11-slim base, dependencies installed before the code is copied, the
+spaCy and NLI models baked into the image, a non-root user, the HEALTHCHECK on /health
+What I changed: used the CPU-only PyTorch index so the image does not pull the multi-GB CUDA
+build; the same image can also start the Streamlit UI. Not built yet: Docker is not installed
+on my laptop
+I can explain it: TODO
