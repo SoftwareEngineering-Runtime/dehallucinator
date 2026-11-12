@@ -146,7 +146,7 @@ sequenceDiagram
         Verifier->>Verifier: Match evidence by claim_id
         alt No matching evidence
             Verifier->>Verifier: Create NOT_ENOUGH_INFO verdict
-            Note right of Verifier: Score = 0.0; best_evidence = None
+            Note right of Verifier: Score = 0.0, best_evidence = None
         else Matching evidence found
             Verifier->>Model: Predict entailment and contradiction probabilities
             Model-->>Verifier: Return probabilities for evidence-claim pairs
