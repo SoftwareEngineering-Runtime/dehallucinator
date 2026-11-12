@@ -143,3 +143,14 @@ by hand, declared the 500 response on /check so it appears in the spec, and adde
 fails if the committed spec and the code differ; updated the architecture doc now that the
 decorator, UI, Docker and full pipeline exist
 I can explain it: TODO
+
+## DH-206 README: API, UI and deployment – 2026-11-12
+Tool: Claude
+Prompt: "Write the Role D section of the README in the same style as the Claim Extractor
+section: what each piece does, how to use it from Python, the REST API, the demo UI, Docker and
+the Jenkins pipeline, with a real example."
+What I kept: the module table, the Corrector tag table, the usage blocks and the status-code table
+What I changed: used real check_answer() output for the example, and ran every command as
+written; found that the package is not installed by the setup steps, so the section says to put
+src on PYTHONPATH first
+I can explain it: TODO
