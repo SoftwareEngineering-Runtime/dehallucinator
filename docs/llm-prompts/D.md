@@ -119,3 +119,15 @@ What I changed: used the CPU-only PyTorch index so the image does not pull the m
 build; the same image can also start the Streamlit UI. Not built yet: Docker is not installed
 on my laptop
 I can explain it: TODO
+
+## DH-180 full Jenkins pipeline – 2026-10-24
+Tool: Claude
+Prompt: "Extend the Jenkinsfile to the full pipeline from manual 11.4: all 8 stages, an 80%
+coverage gate, JUnit and coverage reports published, and on main only a Docker image build
+and deploy that checks /health."
+What I kept: the 8 stages, pytest --cov-fail-under=80 with the HTML report published through
+the HTML Publisher plugin, the main-only Build image and Deploy stages, ci/wait_for_health.py
+What I changed: when Docker is missing on the agent the image stages mark the build UNSTABLE
+instead of failing main for everyone; ran the pipeline on my Jenkins (all stages green,
+93.5% coverage)
+I can explain it: TODO
