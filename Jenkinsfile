@@ -121,7 +121,7 @@ pipeline {
                     runStatus "docker rm -f ${env.CONTAINER}"  // fine if it was not running
                     runCmd "docker run -d --name ${env.CONTAINER} --restart unless-stopped " +
                            "-p ${env.APP_PORT}:8000 ${env.IMAGE}:${env.BUILD_NUMBER}"
-                    runCmd "${venvPython()} ci/wait_for_health.py http://127.0.0.1:${env.APP_PORT}/health 120"
+                    runCmd "${venvPython()} ci/wait_for_health.py ${env.APP_PORT} 120"
                 }
             }
         }
