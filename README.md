@@ -130,7 +130,41 @@ sequence diagrams in [`docs/design/extractor_design.md`](docs/design/extractor_d
 
 ## Evidence Retriever (Role B)
 
-_To be written by Shreya (DH-204)._
+`retrieve_evidence(claims) -> list[Evidence]` in `src/dehallucinator/evidence/retriever.py` finds
+passages that can support or contradict each claim, so the verifier can check them one at a time.
+For every claim it searches Wikipedia, adds the local knowledge base in `data/kb/`, and returns the
+best-matching snippets. Because the local KB is always included, the retriever still returns
+evidence when Wikipedia is unreachable.
+
+| Step | What it does | Requirement |
+|---|---|---|
+| 1. Build query | `build_query()` uses spaCy to take named entities first, then noun chunks, drops stop words, punctuation and duplicates, and caps the query at 8 words (`MAX_QUERY_WORDS`) | FR-2.1 |
+| 2. Search Wikipedia | `search_wikipedia()` returns up to `WIKI_TOP_PAGES` page titles; returns an empty list on network failure instead of raising | FR-2.2 |
+| 3. Fetch page text | `fetch_page_text()` gets the plain text of each page (redirects followed) and truncates it to `WIKI_MAX_CHARS` | FR-2.3 |
+| 4. Add local KB | `load_kb_pages()` adds the documents in `data/kb/` to the candidate pages, so evidence exists even offline | FR-2.4 |
+| 5. Rank snippets | `rank_snippets()` in `ranker.py` turns every sentence into a snippet (the sentence plus the one after it), scores each against the claim with TF-IDF cosine similarity (0 to 1), drops zero-relevance snippets and keeps the best 3 (`EVIDENCE_PER_CLAIM`) across all pages | FR-2.5 |
+| 6. Cache pages | Fetched pages are stored in SQLite (`data/wiki_cache.sqlite3`) and reused for `CACHE_TTL_DAYS` days | FR-2.6 |
+| 7. Retry on failure | Wikipedia requests retry up to `HTTP_RETRIES` times on timeouts, HTTP 5xx and 429 with exponential backoff; other errors fail immediately | FR-2.7 |
+
+Each result is an `Evidence` with `claim_id`, `source` (`"wikipedia"` or `"local_kb"`),
+`source_url`, `title`, `snippet` and `relevance`. The list is flat, and `claim_id` links each
+snippet back to its claim. A claim with no matching evidence simply has no entries.
+
+```python
+>>> from dehallucinator.claims.extractor import extract_claims
+>>> from dehallucinator.evidence.retriever import retrieve_evidence
+>>> claims = extract_claims("The Eiffel Tower was completed in 1899.")
+>>> ev = retrieve_evidence(claims)
+>>> len(ev)
+3
+>>> ev[0].source, ev[0].title, ev[0].relevance
+('wikipedia', 'Eiffel Tower', 0.2303)
+>>> ev[0].snippet[:80]
+'The Eiffel Tower ( EYE-fəl; French: Tour Eiffel [tuʁ ɛfɛl] ) is a lattice tower on'
+```
+
+Timeouts, retry count, page limits, snippets per claim and cache expiry are all set in `config.py`.
+Tests: `tests/unit/test_retriever.py` (TC-2-01 to TC-2-04, 93% coverage of `retriever.py`).
 
 ## Verifier & Scorer (Role C)
 
