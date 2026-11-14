@@ -3,7 +3,9 @@ from dehallucinator.evidence.kb import _title_from_url, load_kb_pages
 
 
 def test_title_from_url_decodes_and_replaces_underscores():
-    assert _title_from_url("https://en.wikipedia.org/wiki/Albert_Einstein", "x") == "Albert Einstein"
+    assert (
+        _title_from_url("https://en.wikipedia.org/wiki/Albert_Einstein", "x") == "Albert Einstein"
+    )
     assert _title_from_url("https://en.wikipedia.org/wiki/Marie%20Curie/", "x") == "Marie Curie"
 
 
