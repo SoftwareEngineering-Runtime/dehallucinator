@@ -24,7 +24,7 @@ pipeline {
         PYTHONUTF8 = '1'
         IMAGE = 'dehallucinator'
         CONTAINER = 'dehallucinator'
-        APP_PORT = '8000'
+        APP_PORT = '8010'  // host port for the deployed container; 8000 is taken on the CI laptop
     }
 
     stages {
