@@ -50,8 +50,12 @@ cd dehallucinator
 python3.11 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+pip install -e .                   # installs the dehallucinator package itself (from src/)
 python -m spacy download en_core_web_sm
 ```
+
+Without `pip install -e .`, `import dehallucinator` fails with "No module named dehallucinator"
+outside pytest (pytest finds `src/` through `pyproject.toml`).
 
 Check an answer from Python:
 
@@ -72,7 +76,7 @@ and can take 30 s or more; later calls reuse the loaded models and the Wikipedia
 ```bash
 ruff format --check . && ruff check .     # lint (line length 100)
 pytest -m "not slow"                      # unit + integration tests, no internet needed
-pytest --cov=src --cov-branch             # with coverage (target: 80%, currently 92%)
+pytest --cov=src --cov-branch             # with coverage (target: 80% per module, currently 94%)
 ```
 
 Unit tests mock the network and the NLI model, so they run offline in a few seconds.
