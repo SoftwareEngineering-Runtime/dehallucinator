@@ -151,6 +151,6 @@ section: what each piece does, how to use it from Python, the REST API, the demo
 the Jenkins pipeline, with a real example."
 What I kept: the module table, the Corrector tag table, the usage blocks and the status-code table
 What I changed: used real check_answer() output for the example, and ran every command as
-written; found that the package is not installed by the setup steps, so the section says to put
-src on PYTHONPATH first
+written; found that the package was not installed by the setup steps, which led to adding
+pip install -e . to Setup (#51); added the blank lines ruff format wants in the Python example
 I can explain it: TODO

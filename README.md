@@ -204,9 +204,6 @@ Real output for "Mars is the fourth planet from the Sun. Mars has three natural 
 
 Trust score 50.0: one claim SUPPORTED, one CONTRADICTED by the local knowledge base.
 
-Run the commands below from the repository root with `src` on the Python path:
-`export PYTHONPATH=src` (Windows PowerShell: `$env:PYTHONPATH = "src"`).
-
 ### From Python
 
 ```python
@@ -216,9 +213,11 @@ from dehallucinator.guard import dehallucinate
 result = check_answer("The Eiffel Tower was completed in 1899.")
 print(result.trust_score, result.corrected)
 
+
 @dehallucinate
 def ask_bot(question: str) -> str:
     return my_llm(question)  # your chatbot
+
 
 ask_bot("When was the Eiffel Tower built?")  # returns a CheckedAnswer
 ```
