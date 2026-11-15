@@ -163,8 +163,14 @@ def test_tc_3_07_model_is_loaded_lazily(mock_tokenizer_load, mock_model_load):
 
     assert tokenizer is mock_tokenizer
     assert model is mock_model
-    mock_tokenizer_load.assert_called_once_with(verifier.config.NLI_MODEL)
-    mock_model_load.assert_called_once_with(verifier.config.NLI_MODEL)
+    mock_tokenizer_load.assert_called_once_with(
+        verifier.config.NLI_MODEL,
+        revision="a150876415327c80daeff35ca6f68f5ed8cf5c24",
+    )
+    mock_model_load.assert_called_once_with(
+        verifier.config.NLI_MODEL,
+        revision="a150876415327c80daeff35ca6f68f5ed8cf5c24",
+    )
 
 
 @patch("dehallucinator.verify.verifier._predict")

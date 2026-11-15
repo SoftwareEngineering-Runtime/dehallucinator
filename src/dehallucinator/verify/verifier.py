@@ -29,8 +29,14 @@ def _load_model():
     if _model is None or _tokenizer is None:
         from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-        _tokenizer = AutoTokenizer.from_pretrained(config.NLI_MODEL)
-        _model = AutoModelForSequenceClassification.from_pretrained(config.NLI_MODEL)
+        _tokenizer = AutoTokenizer.from_pretrained(
+            config.NLI_MODEL,
+            revision="a150876415327c80daeff35ca6f68f5ed8cf5c24",
+        )
+        _model = AutoModelForSequenceClassification.from_pretrained(
+            config.NLI_MODEL,
+            revision="a150876415327c80daeff35ca6f68f5ed8cf5c24",
+        )
 
     return _tokenizer, _model
 
