@@ -172,7 +172,48 @@ Tests: `tests/unit/test_retriever.py` (TC-2-01 to TC-2-04, 93% coverage of `retr
 
 ## Verifier & Scorer (Role C)
 
-_To be written by Ralph (DH-205)._
+`verify_claims(claims, evidence) -> list[Verdict]` in `src/dehallucinator/verify/verifier.py` checks each extracted claim against the evidence returned by Role B. It uses a Natural Language Inference (NLI) model to determine whether the evidence supports, contradicts, or cannot verify the claim. The same module calculates an overall trust score for the chatbot's answer.
+
+| Step | What it does | Requirement |
+|---|---|---|
+| 1. Match evidence | Uses `claim_id` to select only evidence belonging to the current claim | FR-3.2 |
+| 2. Run NLI model | Uses `cross-encoder/nli-deberta-v3-xsmall` to calculate entailment and contradiction probabilities for each evidence-claim pair; the model and tokenizer are loaded only when first needed | FR-3.1 |
+| 3. Assign verdict | Labels a claim `SUPPORTED` when entailment is at least 0.70 and not below contradiction; otherwise `CONTRADICTED` when contradiction is at least 0.70; otherwise `NOT_ENOUGH_INFO` | FR-3.3 |
+| 4. Handle missing evidence | Returns `NOT_ENOUGH_INFO` with confidence 0.0 when no evidence is available | FR-3.4 |
+| 5. Check numerical consistency | When a claim and its selected evidence share a named entity, a number in the claim that is absent from the evidence forces `CONTRADICTED` | FR-3.5 |
+| 6. Calculate trust score | Averages verdict weights: supported = 1.0, unverified = 0.5, contradicted = 0.0; multiplies by 100 | FR-3.6 |
+
+Each result is a `Verdict` containing `claim_id`, `label`, `score` (confidence), and `best_evidence`. The selected evidence is passed to the Corrector so it can cite the source or provide a correction.
+
+### Example
+
+Consider two claims:
+
+1. "The Eiffel Tower is in Paris."
+2. "The Eiffel Tower was completed in 1899."
+
+If the retrieved evidence confirms the location and contradicts the completion year, the verifier produces:
+
+| Claim | Verdict | Meaning |
+|---|---|---|
+| Eiffel Tower is in Paris | `SUPPORTED` | Evidence agrees with the claim |
+| Eiffel Tower was completed in 1899 | `CONTRADICTED` | Evidence indicates a different completion year |
+
+The trust score is:
+
+`((1.0 + 0.0) / 2) Ã— 100 = 50.0`
+
+For an answer with no verdicts, `trust_score([])` returns `100.0`.
+
+### Tests
+
+Tests: `tests/unit/test_verifier.py` (TC-3-02 to TC-3-11, plus trust-score tests).
+
+- **13 tests passed**, 0 failed.
+- **84% combined statement-and-branch coverage** for `verify/verifier.py`.
+- Tested supported, contradicted, and uncertain claims; missing evidence; matching claim IDs; lazy model loading; numerical mismatches; and trust-score calculations.
+
+The NLI model is mocked in unit tests, allowing deterministic verification without downloading or running the actual model.
 
 ## API, UI and deployment (Role D)
 
