@@ -62,13 +62,9 @@ def test_injection_text_is_treated_as_data(monkeypatch):
     monkeypatch.setattr(
         verifier,
         "_predict",
-        lambda pairs: [
-            {"entailment": 0.1, "contradiction": 0.1, "neutral": 0.8}
-        ],
+        lambda pairs: [{"entailment": 0.1, "contradiction": 0.1, "neutral": 0.8}],
     )
-    monkeypatch.setattr(verifier, "_get_nlp", lambda: lambda text: type(
-        "Doc", (), {"ents": []}
-    )())
+    monkeypatch.setattr(verifier, "_get_nlp", lambda: lambda text: type("Doc", (), {"ents": []})())
 
     verdicts = verifier.verify_claims([claim], [evidence])
 
