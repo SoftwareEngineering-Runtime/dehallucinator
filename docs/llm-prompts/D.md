@@ -154,3 +154,24 @@ What I changed: used real check_answer() output for the example, and ran every c
 written; found that the package was not installed by the setup steps, which led to adding
 pip install -e . to Setup (#51); added the blank lines ruff format wants in the Python example
 I can explain it: TODO
+
+## DH-202 maintenance plan – 2026-11-15
+Tool: Claude
+Prompt: "Write the maintenance plan for manual 11.5: dependency updates, configuration changes,
+knowledge base updates, Wikipedia API changes, the bug process and future work, based on how
+our code and CI actually work."
+What I kept: the eight sections, the config table, the severity table and the bug workflow
+What I changed: took every detail from the code (retry rules in _wiki_get, the KB format, the
+pinned requirements, the Docker --only-binary rule); removed a step that told readers to run
+`pytest -m slow`, because no slow tests exist yet; listed the Paris/Tokyo ranking problem we
+found as a known limitation
+I can explain it: TODO
+
+## DH-201 coverage report export – 2026-11-15
+Tool: Claude
+Prompt: "Export the Jenkins HTML coverage report to PDF in docs/ from a fresh Jenkins run."
+What I kept: printing the exact report Jenkins published (builds/<n>/htmlreports/Coverage) with
+headless Edge, saved next to the other exports as docs/exports/Team14_Coverage_Report.pdf
+What I changed: main was red because pip-audit found a new CVE in opentelemetry-api, so the
+report comes from the fix branch's run (main plus that one-line fix, PR #53): 94% line + branch
+I can explain it: TODO
