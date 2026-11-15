@@ -234,3 +234,44 @@ def test_tc_3_12_number_mid_sentence_remains_supported(mock_predict):
     assert verdicts[0].label == "SUPPORTED"
     assert verdicts[0].score == 0.9
     assert verdicts[0].best_evidence == evidence[0]
+
+
+@patch("dehallucinator.verify.verifier._predict")
+def test_unrelated_evidence_must_not_cause_false_contradiction(mock_predict):
+    """Unrelated Japan evidence must not contradict a claim about India."""
+    mock_predict.return_value = [
+        {"entailment": 0.53, "contradiction": 0.19, "neutral": 0.28},
+        {"entailment": 0.0004, "contradiction": 0.91, "neutral": 0.0896},
+    ]
+
+    claims = [
+        Claim(
+            id=1,
+            text="India is the most populous country in the world.",
+            sentence_index=0,
+        )
+    ]
+
+    evidence = [
+        Evidence(
+            claim_id=1,
+            source="local_kb",
+            source_url="kb://india.txt",
+            title="India",
+            snippet="India is the world's most populous country.",
+            relevance=0.65,
+        ),
+        Evidence(
+            claim_id=1,
+            source="local_kb",
+            source_url="kb://japan.txt",
+            title="Japan",
+            snippet="Japan is the world's 11th most populous country.",
+            relevance=0.47,
+        ),
+    ]
+
+    verdicts = verify_claims(claims, evidence)
+
+    assert verdicts[0].label != "CONTRADICTED"
+    assert verdicts[0].best_evidence == evidence[0]

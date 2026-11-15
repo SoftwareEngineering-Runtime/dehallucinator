@@ -63,6 +63,31 @@ def _predict(pairs: list[tuple[str, str]]) -> list[dict[str, float]]:
     return results
 
 
+def _same_subject(claim_text: str, evidence: Evidence) -> bool:
+    """Check whether evidence mentions the claim's main named subject."""
+    nlp = _get_nlp()
+    claim_entities = [
+        ent.text.lower()
+        for ent in nlp(claim_text).ents
+        if ent.label_ in {"PERSON", "ORG", "GPE", "LOC", "FAC", "PRODUCT"}
+    ]
+
+    if not claim_entities:
+        return True
+
+    evidence_text = f"{evidence.title} {evidence.snippet}".lower()
+
+    for entity in claim_entities:
+        if entity in evidence_text:
+            return True
+
+        # Allow partial person names, e.g. Albert Einstein -> Einstein.
+        if any(len(part) >= 4 and part in evidence_text.split() for part in entity.split()):
+            return True
+
+    return False
+
+
 def verify_claims(claims: list[Claim], evidence: list[Evidence]) -> list[Verdict]:
     """Return one verdict per claim based on its available evidence."""
     verdicts = []
@@ -97,7 +122,9 @@ def verify_claims(claims: list[Claim], evidence: list[Evidence]) -> list[Verdict
                 max_entailment = entailment
                 best_entailment_index = index
 
-            if contradiction > max_contradiction:
+            if contradiction > max_contradiction and _same_subject(
+                claim.text, claim_evidence[index]
+            ):
                 max_contradiction = contradiction
                 best_contradiction_index = index
 
