@@ -26,8 +26,9 @@ section on a branch (`docs/DH-<n>-<short-name>`) and open a pull request, same a
 | Project Test Plan (with results of the automated run) | [`exports/Team14_Project_Test_Plan.pdf`](exports/Team14_Project_Test_Plan.pdf) |
 | Test cases TC-1-01 to TC-4-10 with actual results | [`exports/Team14_Test_Cases.xlsx`](exports/Team14_Test_Cases.xlsx) |
 | Jira product backlog | [`exports/Team14_Jira_Backlog.pdf`](exports/Team14_Jira_Backlog.pdf) |
+| Coverage report (Jenkins HTML report, 94% line + branch, 15 Nov 2026) | [`exports/Team14_Coverage_Report.pdf`](exports/Team14_Coverage_Report.pdf) |
 
-Still to come (Sprint 3): validation report, coverage report, final report.
+Still to come (Sprint 3): validation report, final report.
 
 Diagrams go next to the document that uses them (for example
 `architecture/architecture_diagram.png`) and are linked with a relative path.

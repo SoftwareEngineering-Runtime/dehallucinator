@@ -166,3 +166,12 @@ pinned requirements, the Docker --only-binary rule); removed a step that told re
 `pytest -m slow`, because no slow tests exist yet; listed the Paris/Tokyo ranking problem we
 found as a known limitation
 I can explain it: TODO
+
+## DH-201 coverage report export – 2026-11-15
+Tool: Claude
+Prompt: "Export the Jenkins HTML coverage report to PDF in docs/ from a fresh Jenkins run."
+What I kept: printing the exact report Jenkins published (builds/<n>/htmlreports/Coverage) with
+headless Edge, saved next to the other exports as docs/exports/Team14_Coverage_Report.pdf
+What I changed: main was red because pip-audit found a new CVE in opentelemetry-api, so the
+report comes from the fix branch's run (main plus that one-line fix, PR #53): 94% line + branch
+I can explain it: TODO
