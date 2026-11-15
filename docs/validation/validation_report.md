@@ -4,7 +4,7 @@
 **Team:** Team 14  
 **Prepared by:** Ralph D'souza (Role C — Verifier & Scorer)  
 **Validation date:** 15 November 2026  
-**Status:** Partially validated — system and security test integration pending
+**Status:** VALIDATED — system and security tests merged and passing
 
 ## 1. Objective
 
@@ -45,17 +45,13 @@ Automated tests were executed locally using pytest.
 
 **Observed result:**
 
-- Passed: **167**
+- Passed: **186**
 - Failed: **0**
-- Skipped: **2**
-- Execution time: **51.91 seconds**
+- Skipped: **0**
+- Execution time: **55.08 seconds**
+- Warnings: **2** (non-failing third-party library warnings)
 
-The two skipped tests were placeholder tests in:
-
-- `tests/system/test_end_to_end.py`
-- `tests/security/test_security.py`
-
-These results were recorded before the pending system and security test pull requests were merged.
+The full test suite was executed after PR #56 (System Tests) and PR #57 (Security Tests) were merged into `main`. All 186 tests passed, including the integrated system and security tests, with no failures or skipped tests.
 
 ### 3.2 Use-Case Validation Results
 
@@ -162,7 +158,7 @@ An additional automated test, `test_tc_3_12_number_mid_sentence_remains_supporte
 
 `python -m pytest tests/ --cov=src/dehallucinator --cov-branch --cov-report=term-missing -q`
 
-**Observed result:** 167 passed, 2 skipped; **94% combined statement-and-branch coverage**.
+**Observed result:** 186 passed, 0 failed, 0 skipped, with **97% combined statement-and-branch coverage**.
 
 | Module | Reported combined coverage |
 |---|---:|
@@ -178,16 +174,18 @@ An additional automated test, `test_tc_3_12_number_mid_sentence_remains_supporte
 | Data models | 100% |
 | Pipeline | 100% |
 | UI rendering | 100% |
-| Verifier | 84% |
-| **Overall** | **94%** |
+| Verifier | 99% |
+| **Overall** | **97%** |
 
-The overall coverage report recorded 631 statements, 29 missed statements, 190 branches, and 16 partially covered branches.
+The updated coverage report recorded 643 statements, 17 missed statements, 198 branches, and 12 partially covered branches.
 
-Every listed module achieved at least 84% in the combined coverage metric. However, separate line and branch percentages for every module have not been established by this report; therefore, compliance with the test plan's independent line-coverage and branch-coverage exit criteria requires further verification.
+All listed modules achieved at least 88% combined coverage. The overall coverage increased from 94% to 97% after the system and security tests were merged.
+
+The reported percentage combines statement and branch coverage; it does not separately establish each module's line and branch coverage percentages.
 
 ## 6. Reliability, Security, and Error Handling
 
-The executed unit tests covered the following behaviors:
+The executed automated tests covered the following behaviors:
 
 - Rejection of invalid and oversized inputs.
 - Safe handling of SQL-like cache titles.
@@ -197,28 +195,19 @@ The executed unit tests covered the following behaviors:
 - Prevention of stack-trace disclosure in unexpected API errors.
 - Preservation of response formatting and non-claim text.
 
-These results provide evidence for individual reliability and security-related behaviors.
+The dedicated system and security test suites from PR #56 and PR #57 have been merged and successfully executed as part of the full test suite.
 
-They do not replace the dedicated system-level and security test suites.
+These results provide evidence of functional reliability, security-related behavior, and end-to-end integration.
 
-## 7. Pending Validation and Known Limitations
+## 7. Known Limitations
 
-At the time of this report, the main branch contained placeholder tests for the system and security test suites.
+The following limitations remain:
 
-The following pull requests were awaiting review and merge:
+- The 97% coverage figure is a combined statement-and-branch metric, not independent proof of each module's line and branch coverage.
+- Tests using mocked HTTP responses do not independently establish live Wikipedia service availability.
+- Passing automated security tests does not guarantee the absence of all security vulnerabilities.
 
-| Pull request | Scope | Status |
-|---|---|---|
-| PR #56 | DH-198 System Tests | Pending merge |
-| PR #57 | DH-199 Security Tests | Pending merge |
-
-The system and security tests were developed and locally formatted/linted, and the team lead reported successful testing. However, the full test suite on the current main branch must be rerun after merging these pull requests.
-
-Additional limitations:
-
-- The 94% figure is combined coverage, not independent proof of each module's line and branch coverage.
-- Unit tests using mocked HTTP responses do not independently establish live Wikipedia service availability.
-- No claim is made that all system-level and security exit criteria have been satisfied.
+The system and security test suites are no longer pending integration.
 
 ## 8. Validation Conclusion
 
@@ -228,13 +217,17 @@ The observed results demonstrate successful automated validation of the document
 
 - 39 documented functional test cases have corresponding passing automated tests.
 - 118 tests passed across the separately executed use-case test groups.
-- The full test suite recorded 167 passed, 0 failed, and 2 skipped.
-- Overall combined statement-and-branch coverage reached 94%.
+- The full test suite recorded **186 passed, 0 failed, and 0 skipped**.
+- Overall combined statement-and-branch coverage reached **97%**.
+- The verifier module achieved **99% combined coverage**.
+- System and security test suites were merged and executed successfully.
 - Reliability and error-handling scenarios were exercised successfully.
 
-**Final status: PARTIALLY VALIDATED**
+**Final status: VALIDATED**
 
-Functional validation is supported by the available automated test results. Final validation sign-off remains pending until the dedicated system and security suites are merged and executed, and the separate line-coverage and branch-coverage exit criteria are confirmed.
+The Dehallucinator software has successfully completed the documented automated functional validation, including the integrated system and security test suites. All 186 tests passed without failures or skips.
+
+The limitations listed above remain applicable, and this validation status does not imply that every possible production scenario or security risk has been tested.
 
 ## 9. Supporting Evidence
 
