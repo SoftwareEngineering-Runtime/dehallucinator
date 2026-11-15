@@ -235,6 +235,7 @@ def test_tc_3_12_number_mid_sentence_remains_supported(mock_predict):
     assert verdicts[0].score == 0.9
     assert verdicts[0].best_evidence == evidence[0]
 
+
 @patch("dehallucinator.verify.verifier._predict")
 def test_unrelated_evidence_must_not_cause_false_contradiction(mock_predict):
     """Unrelated Japan evidence must not contradict a claim about India."""

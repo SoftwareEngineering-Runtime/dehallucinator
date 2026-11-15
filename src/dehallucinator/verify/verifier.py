@@ -62,6 +62,7 @@ def _predict(pairs: list[tuple[str, str]]) -> list[dict[str, float]]:
 
     return results
 
+
 def _same_subject(claim_text: str, evidence: Evidence) -> bool:
     """Check whether evidence mentions the claim's main named subject."""
     nlp = _get_nlp()
@@ -81,13 +82,11 @@ def _same_subject(claim_text: str, evidence: Evidence) -> bool:
             return True
 
         # Allow partial person names, e.g. Albert Einstein -> Einstein.
-        if any(
-            len(part) >= 4 and part in evidence_text.split()
-            for part in entity.split()
-        ):
+        if any(len(part) >= 4 and part in evidence_text.split() for part in entity.split()):
             return True
 
     return False
+
 
 def verify_claims(claims: list[Claim], evidence: list[Evidence]) -> list[Verdict]:
     """Return one verdict per claim based on its available evidence."""

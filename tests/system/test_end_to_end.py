@@ -33,7 +33,7 @@ def test_end_to_end_samples(sample):
 
     verdicts_by_claim = {
         claim.text.strip(): verdict
-        for claim, verdict in zip(result.claims, result.verdicts)
+        for claim, verdict in zip(result.claims, result.verdicts, strict=True)
     }
 
     for hallucination in sample["hallucinations"]:
@@ -45,6 +45,6 @@ def test_end_to_end_samples(sample):
         )
 
     if not sample["hallucinations"]:
-        assert all(
-            verdict.label != "CONTRADICTED" for verdict in result.verdicts
-        ), f"Sample {sample['id']}: correct answer was falsely flagged"
+        assert all(verdict.label != "CONTRADICTED" for verdict in result.verdicts), (
+            f"Sample {sample['id']}: correct answer was falsely flagged"
+        )
