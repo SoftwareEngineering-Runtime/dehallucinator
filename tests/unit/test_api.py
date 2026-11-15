@@ -1,5 +1,8 @@
 """Tests for the API (Role D). check_answer is faked, so no network or model is used."""
 
+import json
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -120,3 +123,12 @@ def test_script_input_is_returned_as_json_data_not_html(monkeypatch):
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("application/json")
     assert response.json()["original"] == script
+
+
+def test_committed_openapi_spec_matches_the_app():
+    # docs/design/openapi.json is the API spec in the design doc (DH-191). Regenerate it with
+    # python -c "import json; from dehallucinator.api import app;
+    #            print(json.dumps(app.openapi(), indent=2))" > docs/design/openapi.json
+    spec_path = Path(__file__).resolve().parents[2] / "docs" / "design" / "openapi.json"
+
+    assert json.loads(spec_path.read_text(encoding="utf-8")) == app.openapi()
