@@ -10,8 +10,8 @@ rehearsed demo.
 **Committed stories (18, 38 points):** DH-180, DH-181, DH-183, DH-191, DH-198, DH-199, DH-200,
 DH-201, DH-202, DH-203, DH-204, DH-205, DH-206, DH-207, DH-208, DH-214, DH-215, DH-216
 (DH-180, DH-181 and DH-191 carried over from Sprint 2)
-**Completed by 16 Nov:** 15 of 18 (32 of 38 points). DH-207 (final report and slides), DH-208
-(demo rehearsals) and DH-216 (this log) are finished around the demo on 16 Nov.
+**Completed by 16 Nov:** 17 of 18 (36 of 38 points). Only DH-208 (demo rehearsals) is still
+open; its backup recording and the pre-cached demo samples are done.
 
 ### Features and quality (Epics E7, E9)
 
@@ -35,11 +35,11 @@ DH-201, DH-202, DH-203, DH-204, DH-205, DH-206, DH-207, DH-208, DH-214, DH-215, 
 | DH-204 | README: Evidence Retriever + Role B prompt log | Shreya (B) | 1 | PRs #49, #50 | Done |
 | DH-205 | README: Verifier + Role C prompt log | Ralph (C) | 1 | PRs #60, #61 | Done |
 | DH-206 | README: API, UI and deployment | Satwik (D) | 1 | PR #47 | Done |
-| DH-207 | Final report and presentation slides | Shreya (B) | 3 | slide deck (13 slides) | In progress |
+| DH-207 | Final report and presentation slides | Shreya (B), finished by Nikitha (A) | 3 | 13-slide deck; SE deliverables PDF (`docs/exports/`) | Done |
 | DH-208 | Demo rehearsals and backup recording | Nikitha (A) | 2 | samples pre-cached, backup recording | In progress |
 | DH-214 | Sprint 2 log | Nikitha (A) | 1 | PR #45 | Done |
 | DH-215 | Commit exported final documents | Nikitha (A) | 1 | PR #46 | Done |
-| DH-216 | Sprint 3 log | Nikitha (A) | 1 | this file | In progress |
+| DH-216 | Sprint 3 log | Nikitha (A) | 1 | this file | Done |
 
 **Quality at the end of the sprint** (from `pytest`, `ruff` and SonarQube Cloud, 16 Nov):
 186 tests passing, 0 failed, 0 skipped (unit 165, integration 3, system 10, security 8); 94%
@@ -70,12 +70,13 @@ scored 100).
 | 15 Nov | Ralph | System tests and a same-subject check that stops false CONTRADICTED verdicts (PR #56); security tests (PR #57); review asked for `ruff` fixes, merged the same evening |
 | 16 Nov | Ralph | Validation report, status VALIDATED (PR #59) |
 | 16 Nov | Nikitha | Finished the remaining fixes on Ralph's PRs so they could merge before the demo: pinned pip and setuptools in the hash lock (PR #58), fixed the README section C numbers and encoding (PR #60), resolved the C.md conflict (PR #61); SonarQube gate on `main` green |
+| 16 Nov | Nikitha | Final 13-slide deck rebuilt with current numbers and screenshots; SE deliverables PDF (use case diagram, Jira backlog, SRS, test plan, project plan, architecture and design, test and coverage reports, demo screenshots, slides) |
 
 ## Review
 
 - **Nikitha:** README with working setup steps; all 10 demo samples cached and a backup
   recording of the demo; sprint logs for Sprints 0–3.
-- **Shreya:** kb.py at 100% coverage; README section B; the slide deck.
+- **Shreya:** kb.py at 100% coverage; README section B; the first draft of the slide deck.
 - **Ralph:** 10 system tests running the real pipeline on the 10 samples; 8 security tests;
   the validation report; the hash-locked Docker dependencies that made the SonarQube gate pass.
 - **Satwik:** the Docker image (builds, `/health` ok, UI runs from it); the 8-stage Jenkins

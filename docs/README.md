@@ -5,7 +5,7 @@ section on a branch (`docs/DH-<n>-<short-name>`) and open a pull request, same a
 
 | Document | File | Owner |
 |---|---|---|
-| Software Requirements Specification | [`srs/SRS.md`](srs/SRS.md) (v1.0 PDF: [`srs/SRS_Dehallucinator.pdf`](srs/SRS_Dehallucinator.pdf)) | Compiled by Shreya (B); each member owns their section |
+| Software Requirements Specification | [`srs/SRS.md`](srs/SRS.md) (v1.0 PDF: [`srs/SRS_Dehallucinator.pdf`](srs/SRS_Dehallucinator.pdf); UML use case diagram: [`srs/use_case_diagram.png`](srs/use_case_diagram.png)) | Compiled by Shreya (B); each member owns their section |
 | Architecture | [`architecture/architecture.md`](architecture/architecture.md) | Compiled by Nikitha (A); each member owns their component |
 | Architecture – Evidence Retriever | [`architecture_evidence_retriever.md`](architecture_evidence_retriever.md) | Shreya (B) |
 | Architecture – Verifier & Scorer | [`architecture/architecture_verifier.md`](architecture/architecture_verifier.md) | Ralph (C) |
@@ -27,8 +27,10 @@ section on a branch (`docs/DH-<n>-<short-name>`) and open a pull request, same a
 | Test cases TC-1-01 to TC-4-10 with actual results | [`exports/Team14_Test_Cases.xlsx`](exports/Team14_Test_Cases.xlsx) |
 | Jira product backlog | [`exports/Team14_Jira_Backlog.pdf`](exports/Team14_Jira_Backlog.pdf) |
 | Coverage report (Jenkins HTML report, 94% line + branch, 15 Nov 2026) | [`exports/Team14_Coverage_Report.pdf`](exports/Team14_Coverage_Report.pdf) |
+| **SE project deliverables, one PDF** (use case model, Jira backlog, SRS, test plan + project plan, architecture and design, test and coverage reports, validation report, demo screenshots, slides; 16 Nov 2026) | [`exports/Team14_SE_Project_Deliverables.pdf`](exports/Team14_SE_Project_Deliverables.pdf) |
+| Presentation slides (13 slides) | [`exports/Team14_Presentation_Slides.pptx`](exports/Team14_Presentation_Slides.pptx), [PDF](exports/Team14_Presentation_Slides.pdf) |
 
-Still to come (Sprint 3): validation report, final report.
+The validation report is in [`validation/validation_report.md`](validation/validation_report.md). The Test Plan, Architecture and Jira Backlog PDFs above were regenerated from `main` on 16 Nov 2026.
 
 Diagrams go next to the document that uses them (for example
 `architecture/architecture_diagram.png`) and are linked with a relative path.
