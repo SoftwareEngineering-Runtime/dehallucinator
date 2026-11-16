@@ -201,7 +201,7 @@ If the retrieved evidence confirms the location and contradicts the completion y
 
 The trust score is:
 
-`((1.0 + 0.0) / 2) Ã— 100 = 50.0`
+`((1.0 + 0.0) / 2) × 100 = 50.0`
 
 For an answer with no verdicts, `trust_score([])` returns `100.0`.
 
@@ -209,8 +209,8 @@ For an answer with no verdicts, `trust_score([])` returns `100.0`.
 
 Tests: `tests/unit/test_verifier.py` (TC-3-02 to TC-3-11, plus trust-score tests).
 
-- **13 tests passed**, 0 failed.
-- **84% combined statement-and-branch coverage** for `verify/verifier.py`.
+- **14 tests passed**, 0 failed.
+- **86% combined statement-and-branch coverage** for `verify/verifier.py` (99% when the system tests in `tests/system/` also run).
 - Tested supported, contradicted, and uncertain claims; missing evidence; matching claim IDs; lazy model loading; numerical mismatches; and trust-score calculations.
 
 The NLI model is mocked in unit tests, allowing deterministic verification without downloading or running the actual model.
