@@ -22,9 +22,9 @@ WORKDIR /app
 # Dependencies first, so code changes do not reinstall them. The CPU-only PyTorch index
 # keeps the image several GB smaller than the default CUDA build. --only-binary installs
 # prebuilt wheels only, so no package runs its own build scripts during the image build.
-COPY requirements.txt .
-RUN pip install --only-binary :all: --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt \
-    && python -m spacy download en_core_web_sm
+COPY requirements.lock.txt .
+RUN pip install --require-hashes --only-binary :all: --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.lock.txt \
+    && python -m spacy download en_core_web_sm-3.8.0 --direct
 
 # Bake the NLI model into the image so the first /check does not wait for a download.
 COPY src/dehallucinator/config.py /tmp/config.py
